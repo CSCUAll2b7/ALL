@@ -1,0 +1,114 @@
+import sys
+from tkinter import *
+import os
+import sqlite as sql
+
+class Button():
+    ''' class for every button on screen made from image'''
+    def __init__(self, image,imageCursorOn, imagePressed, pos):
+        self.buttonImage = image
+        self.buttonImageCursorOn = imageCursorOn
+        self.buttonImagePressed = imagePressed
+        self.position = pos
+
+    def createButton(self):
+        '''creates visable button'''
+        pass
+
+    def getMousePosition(self):
+        '''returns mouse position(x,y)'''
+        pass
+
+    def mouseOver(self):
+        '''changes button image when mouse is over it'''
+        pass
+
+    def buttonPress(self):
+        '''changes button image when clicked'''
+        pass
+    
+
+class Vector():
+    def __init__(self,x, y):
+        self.x = x
+        self.y = y
+
+    #size = Vector(50,10)
+
+
+class Background():
+    '''class for creating backgrounds for scenes'''
+    def __init__(self,canvas, image):
+        self.image = image
+        self.canvas = canvas
+
+    def setBackground(self):
+        '''sets background image on (0,0) position'''
+        bg = PhotoImage(file = self.image)
+        self.canvas.create_image(0, 0, image = bg, anchor = NW)
+        self.canvas.configure(bg="white")
+
+class Database():
+    '''get items from database. FINISH THIS'''
+    def __init__(self, database,  ):
+        self.db = database
+
+        def getInfo(self, enquiery):
+            con = sql.connect('data.sqlite')
+            cur = con.cursor()
+
+            cur.execute('''SELECT category, name, price, rating FROM games WHERE
+					category = ?;''',(question,))
+
+            for row in cur:
+                print(row)
+
+            con.close()
+            
+
+        
+class TextBox():
+    def __init__(self, x, y, width, height):
+        self.place_x = x
+        self.place_y = y
+        self.width = width
+        self.height = height
+
+
+    def placeItem(self, place_x, place_y,width,height):
+        
+        pass
+
+                        
+                
+
+	# l = tk.Label(root, 
+        #text=languages[i], 
+        # fg='White' if brightness < 120 else 'Black', 
+        #bg=bg_colour)
+        # l.place(x = 20, y = 30 + i*30, width=120, height=25)
+
+class Game:
+    '''main class.
+every object should be craated here'''
+    def __init__(self):
+        self.window = Tk()
+        self.window.title('Game Shop')
+        self.canvas = Canvas(self.window, width =800, height =  600, bg = 'blue')
+        self.canvas.pack()
+        
+        background = Background(self.canvas,'download.png')
+        background.setBackground()
+        #pack everything!
+        self.mainLoop()
+
+    def mainLoop(self):
+        while(True):  
+            print (self.window.winfo_pointerxy())
+            self.window.update_idletasks()
+            self.window.update()
+
+
+    
+if __name__ == '__main__':
+    game = Game()
