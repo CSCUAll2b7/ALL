@@ -1,3 +1,8 @@
+import sys
+from tkinter import *
+from PIL import Image, ImageTk
+import winsound
+
 class GUI():
     ''' class for all graphical objects with functions for creating each of them'''
     def __init__(self, root):
@@ -14,12 +19,14 @@ class GUI():
         self.frame = Frame(self.root, height = h, width = w, bd = corners)
         self.frame.pack(side = packing)
 
-    def createButton(self, frame,task, buttonText = 'hello', buttonImage = 'shop.gif', packing = 'LEFT'):
+    def createButton(self, frame,task, buttonText = 'hello', buttonImage = 'shop.gif', packing = False):
         self.button = Button(frame, text = buttonText, image = buttonImage, command = task)
-        self.button.pack(side = packing)
+        if packing == True:
+            self.button.pack()
 
     def createWindow(self, posx, posy,insideObject, h = 300, w = 300):
         self.canvas.create_window(posx, posy, height = h, width = w, window = insideObject)
+        self.canvas.pack()
 
     def createEntry(self, frame, background = "white", border = 1, textFont = 'Helvetica' ):
         self.entry = Entry(frame, bg = background, bd = border, font = textFont, exportselection=0, width = 2)
@@ -29,19 +36,122 @@ class GUI():
         self.listBox = Listbox(frame, cursor = cur, bg = normalBg, font = 'helvetica', height = lines, selectmode = mode , selectbackground = selectedBg)
         self.listBox.pack()
 
-    def createTextFromFile(self, textFile, posx, posy, textFont, textSize, textType, colour = 'pink'):
-        f = open(textFile, "r")
-        f.close()
-        self.canvas.create_text(posx, posy, text = f, fill = colour, font= (textFont, textSize, textType))
-
     def createText(self, txt, posx, posy, textFont, textSize, textType, colour = 'pink'):
         self.canvas.create_text(posx, posy,text = txt, fill = colour, font= (textFont, textSize, textType))
 
-    def createRadiobutton(self, frame, txt, task, pic, position): # continue
+    def createRadiobutton(self, frame, txt, task, pic, position): 
         self.radioButton = Radiobutton(frame, text = txt,command = task, image = pic,  variable = var , value = position)
         #figure out how to pack
+
+    def createImage(self, posx, posy, img):
+        self.canvas.create_image(posx, posy, image = img)
         
     def destroy(self):
         self.frame.destroy()    
-        self.frame = Frame(self.root)
-        self.frame.pack()
+        
+    def moveObject(self, obj, posx, posy):
+        self.canvas.move(obj, posx, posy)
+
+#-------------------------------------------------------------------------
+
+gameWindow = Tk()
+
+def sound():    
+  winsound.PlaySound("SystemExit", winsound.SND_ALIAS)
+
+def openImage(filename):
+    image = Image.open(filename)
+    tkImage = ImageTk.PhotoImage(image)
+    return tkImage
+
+def getText(textFile):        
+        try:
+            f = open(textFile, "r")
+            text = f.read()
+            return text
+        
+        finally:
+            f.close()
+
+            
+def menuPage(gameWindow):
+    
+    menuFrame = GUI(gameWindow)
+    backGround = openImage('shop.gif')
+    startB = openImage('startfinal1.png')
+    infoB = openImage('informationfinal1.png')
+    exitB = openImage('exitfinal1.png')
+
+    menuFrame.createCanvas(menuFrame.frame)
+    menuFrame.createImage(1024/2,768/2,backGround)
+
+    def createMenuButtons(startB, infoB, exitB):
+        for i in startB, infoB, exitB:
+                
+            if i == startB:
+                task = selectionPage
+                y = 225
+            elif i == infoB:
+                task = infoPage
+                y = 350
+            elif i == exitB:
+                task = menuFrame.destroy
+                y = 475
+                    
+            button = menuFrame.createButton(None, task, buttonText = None, buttonImage = i, packing = False)  
+            menuFrame.createWindow(512, y, button, h = 57, w = 292) #doesnt work
+                
+    createMenuButtons(startB, infoB, exitB)#fix this!!
+
+def infoPage(gameWindow):
+    
+    menuFrame.destroy()
+    infoFrame = GUI(gameWindow)
+    backGround = openImage('information.gif')
+    selectionFrame.createCanvas(selectionFrame.frame)
+    selectionFrame.createImage(1024/2,768/2,backGround)
+
+    gameDescription = getText('firstText.txt')
+    gameDevs = getText('secondText.txt')
+
+    selectionFrame.createText(gameDescription, 512, 125, "fixedsys", 10, None, colour = 'white')#check coordinates
+    selectionFrame.createText(gameDevs, 512, 425, "fixedsys", 8, None, colour = 'white')
+
+    startB = openImage('startfinal1.png')
+    backB = openImage('backfinal1.png')
+
+    selectionFrame.createButton(None, gamePage, buttonText = None, buttonImage = startB, packing = False)
+    selectionFrame.createButton(None, menuPage, buttonText = None, buttonImage = backB, packing = False)
+
+    selectionFrame.createWindow(512, 575, startB, h = 57, w = 292)
+    selectionFrame.createWindow(512, 650, backB, h = 57, w = 292)
+    
+
+def selectionPage(gameWindow):
+
+    menuFrame.destroy()
+    selectionFrame = GUI(gameWindow)
+
+    backGround = openImage('selection.gif')
+    
+    selectionFrame.createCanvas(selectionFrame.frame)
+    selectionFrame.createImage(1024/2,768/2,backGround)
+
+    
+
+
+
+
+
+
+
+
+
+
+
+menuPage(gameWindow)
+
+
+
+print('DONE')
+gameWindow.mainloop()
