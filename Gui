@@ -1,0 +1,47 @@
+class GUI():
+    ''' class for all graphical objects with functions for creating each of them'''
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Game Shop")
+        self.frame = Frame(self.root)
+        self.frame.pack()
+
+    def createCanvas(self, frame, w = 1024, h = 768, background = "white"):
+        self.canvas = Canvas(frame, width = w, height = h, bg = background)
+        self.canvas.pack()
+
+    def createFrame(self, w = 1024, h = 768, corners = 10, packing = 'LEFT'):
+        self.frame = Frame(self.root, height = h, width = w, bd = corners)
+        self.frame.pack(side = packing)
+
+    def createButton(self, frame,task, buttonText = 'hello', buttonImage = 'shop.gif', packing = 'LEFT'):
+        self.button = Button(frame, text = buttonText, image = buttonImage, command = task)
+        self.button.pack(side = packing)
+
+    def createWindow(self, posx, posy,insideObject, h = 300, w = 300):
+        self.canvas.create_window(posx, posy, height = h, width = w, window = insideObject)
+
+    def createEntry(self, frame, background = "white", border = 1, textFont = 'Helvetica' ):
+        self.entry = Entry(frame, bg = background, bd = border, font = textFont, exportselection=0, width = 2)
+        self.entry.pack()
+
+    def createListbox(self, frame,cur,mode, normalBg = "white",lines = 5, selectedBg = "red"): #mode may be SINGLE or multiple
+        self.listBox = Listbox(frame, cursor = cur, bg = normalBg, font = 'helvetica', height = lines, selectmode = mode , selectbackground = selectedBg)
+        self.listBox.pack()
+
+    def createTextFromFile(self, textFile, posx, posy, textFont, textSize, textType, colour = 'pink'):
+        f = open(textFile, "r")
+        f.close()
+        self.canvas.create_text(posx, posy, text = f, fill = colour, font= (textFont, textSize, textType))
+
+    def createText(self, txt, posx, posy, textFont, textSize, textType, colour = 'pink'):
+        self.canvas.create_text(posx, posy,text = txt, fill = colour, font= (textFont, textSize, textType))
+
+    def createRadiobutton(self, frame, txt, task, pic, position): # continue
+        self.radioButton = Radiobutton(frame, text = txt,command = task, image = pic,  variable = var , value = position)
+        #figure out how to pack
+        
+    def destroy(self):
+        self.frame.destroy()    
+        self.frame = Frame(self.root)
+        self.frame.pack()
