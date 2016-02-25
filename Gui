@@ -3,61 +3,13 @@ from tkinter import *
 from PIL import Image, ImageTk
 import winsound
 
-class GUI():
-    ''' class for all graphical objects with functions for creating each of them'''
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Game Shop")
-        self.frame = Frame(self.root)
-        self.frame.pack()
-
-    def createCanvas(self, frame, w = 1024, h = 768, background = "white"):
-        self.canvas = Canvas(frame, width = w, height = h, bg = background)
-        self.canvas.pack()
-
-    def createFrame(self, w = 1024, h = 768, corners = 10, packing = 'LEFT'):
-        self.frame = Frame(self.root, height = h, width = w, bd = corners)
-        self.frame.pack(side = packing)
-
-    def createButton(self, frame,task, buttonText = 'hello', buttonImage = 'shop.gif', packing = False):
-        self.button = Button(frame, text = buttonText, image = buttonImage, command = task)
-        if packing == True:
-            self.button.pack()
-
-    def createWindow(self, posx, posy,insideObject, h = 300, w = 300):
-        self.canvas.create_window(posx, posy, height = h, width = w, window = insideObject)
-        self.canvas.pack()
-
-    def createEntry(self, frame, background = "white", border = 1, textFont = 'Helvetica' ):
-        self.entry = Entry(frame, bg = background, bd = border, font = textFont, exportselection=0, width = 2)
-        self.entry.pack()
-
-    def createListbox(self, frame,cur,mode, normalBg = "white",lines = 5, selectedBg = "red"): #mode may be SINGLE or multiple
-        self.listBox = Listbox(frame, cursor = cur, bg = normalBg, font = 'helvetica', height = lines, selectmode = mode , selectbackground = selectedBg)
-        self.listBox.pack()
-
-    def createText(self, txt, posx, posy, textFont, textSize, textType, colour = 'pink'):
-        self.canvas.create_text(posx, posy,text = txt, fill = colour, font= (textFont, textSize, textType))
-
-    def createRadiobutton(self, frame, txt, task, pic, position): 
-        self.radioButton = Radiobutton(frame, text = txt,command = task, image = pic,  variable = var , value = position)
-        #figure out how to pack
-
-    def createImage(self, posx, posy, img):
-        self.canvas.create_image(posx, posy, image = img)
-        
-    def destroy(self):
-        self.frame.destroy()    
-        
-    def moveObject(self, obj, posx, posy):
-        self.canvas.move(obj, posx, posy)
-
-#-------------------------------------------------------------------------
 
 gameWindow = Tk()
+mainPage = False
+infoPage = True
 
 def sound():    
-  winsound.PlaySound("SystemExit", winsound.SND_ALIAS)
+    winsound.PlaySound("SystemExit", winsound.SND_ALIAS)
 
 def openImage(filename):
     image = Image.open(filename)
@@ -73,85 +25,138 @@ def getText(textFile):
         finally:
             f.close()
 
+def setinfoPage():
+    mainPage = False
+    infoPage = True
+    
+    
+menuBackGround = openImage('shop.gif')
+infoBackGround = openImage('wolf.jpg')
+startB = openImage('startfinal1.png')
+infoB = openImage('informationfinal1.png')
+exitB = openImage('exitfinal1.png')
+backIcon = openImage('new.png')
+forwardIcon = openImage('forward.png')
+class Gui1():
+    ''' class for all graphical objects with functions for creating each of them'''
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Game Shop")
+        
+        self.frame = Frame(self.root)
+        self.frame.pack()
+        
+        self.canvas = Canvas(self.frame, width = 1024, height = 768, bg = "white")
+        self.canvas.pack()
+        self.canvas.create_image(1024/2,768/2,image = menuBackGround)
+        
+        self.button1 = Button(None, text = None, image = startB, command = sound,cursor = 'hand2')
+        self.button2 = Button(None, text = None, image = infoB, command = setinfoPage, cursor = 'hand2')
+        self.button3 = Button(None, text = None, image = exitB, command = gameWindow.destroy, cursor = 'hand2')
+
+        self.canvas.create_window(512, 500, height = 57, width = 292, window = self.button1)
+        self.canvas.create_window(512, 575, height = 57, width = 292, window = self.button2)
+        self.canvas.create_window(512, 650, height = 57, width = 292, window = self.button3)
+
+    def destroy():
+        self.frame.destroy()
+
+class Gui2():
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Game Shop")
+
+        self.frame = Frame(self.root)
+        self.frame.pack()
+        
+        self.canvas = Canvas(self.frame, width = 1024, height = 768, bg = "white")
+        self.canvas.pack()
+        self.canvas.create_image(1024/2,768/2,image = infoBackGround)
+        
+        self.canvas.create_text(512, 100, fill = 'pink', font = ("fixedsys", 32, "bold"), text = "INFORMATION" )
+        self.canvas.create_text(512, 450, fill = 'pink', font = ("fixedsys", 18), text = getText('text7.txt') )
+    
+        self.pageCount = 0
+        self.buttonBack = Button(None, text = None, image = backIcon, command = lambda : goBack(self.pageCount), cursor = 'hand2', state = DISABLED)
+        self.canvas.create_window(120, 450, height = 35, width = 35, window = self.buttonBack)
+        self.buttonForward = Button(None, text = None, image = forwardIcon, command = lambda : goForward(self.pageCount), cursor = 'hand2', state = NORMAL)
+        self.canvas.create_window(900, 450, height = 35, width = 35, window = self.buttonForward)
+        changeableText = self.canvas.create_text(512, 295, fill = 'pink', font = ("fixedsys", 18), text = getText('text1.txt'))
+
+        self.button1 = Button(None, text = None, image = startB, command = sound, cursor = 'hand2')
+        self.button3 = Button(None, text = None, image = exitB, command = gameWindow.destroy, cursor = 'hand2')
+        self.canvas.create_window(512, 615, height = 57, width = 292, window = self.button1)
+        self.canvas.create_window(512, 685, height = 57, width = 292, window = self.button3)
+                                                      
+        def goForward(page):
+            print(self.pageCount)
+            self.pageCount = self.pageCount + 1
+            if page == 1:
+                txt = getText('text2.txt')
+                self.canvas.itemconfigure(changeableText, text = txt)
+            elif page == 2:
+                txt = getText('text3.txt')
+                self.canvas.itemconfigure(changeableText, text = txt)
+            elif page == 3:
+                txt = getText('text4.txt')
+                self.canvas.itemconfigure(changeableText, text = txt)
+            elif page == 4:
+                txt = getText('text5.txt')
+                self.canvas.itemconfigure(changeableText, text = txt)
+            elif page == 5:
+                txt = getText('text6.txt')
+                self.canvas.itemconfigure(changeableText, text = txt)
+                
+            if  page >0:
+                self.buttonBack.config(state = NORMAL)
+            else:
+                self.buttonBack.config(state = DISABLED)
+                
+            if page < 5:
+                self.buttonForward.config(state = NORMAL)
+            else:
+                self.buttonForward.config(state = DISABLED)
+
             
-def menuPage(gameWindow):
-    
-    menuFrame = GUI(gameWindow)
-    backGround = openImage('shop.gif')
-    startB = openImage('startfinal1.png')
-    infoB = openImage('informationfinal1.png')
-    exitB = openImage('exitfinal1.png')
+        def goBack(page):
+            print(self.pageCount)
+            self.pageCount = self.pageCount - 1
+            if page == 0:
+                txt = getText('text1.txt')
+                self.canvas.itemconfigure(changeableText, text = txt)
+            elif page == 1:
+                txt = getText('text2.txt')
+                self.canvas.itemconfigure(changeableText, text = txt)
+            elif page == 2:
+                txt = getText('text3.txt')
+                self.canvas.itemconfigure(changeableText, text = txt)
+            elif page == 3:
+                txt = getText('text4.txt')
+                self.canvas.itemconfigure(changeableText, text = txt)
+            elif page == 4:
+                txt = getText('text5.txt')
+                self.canvas.itemconfigure(changeableText, text = txt)
 
-    menuFrame.createCanvas(menuFrame.frame)
-    menuFrame.createImage(1024/2,768/2,backGround)
-
-    def createMenuButtons(startB, infoB, exitB):
-        for i in startB, infoB, exitB:
+            if page > 0 :
+                self.buttonBack.config(state = NORMAL)
+            else:
+                self.buttonBack.config(state = DISABLED)
                 
-            if i == startB:
-                task = selectionPage
-                y = 225
-            elif i == infoB:
-                task = infoPage
-                y = 350
-            elif i == exitB:
-                task = menuFrame.destroy
-                y = 475
-                    
-            button = menuFrame.createButton(None, task, buttonText = None, buttonImage = i, packing = False)  
-            menuFrame.createWindow(512, y, button, h = 57, w = 292) #doesnt work
-                
-    createMenuButtons(startB, infoB, exitB)#fix this!!
+            if page < 5:
+                self.buttonForward.config(state = NORMAL)
+            else:
+                self.buttonForward.config(state = DISABLED)
+            
+   
+        
 
-def infoPage(gameWindow):
-    
-    menuFrame.destroy()
-    infoFrame = GUI(gameWindow)
-    backGround = openImage('information.gif')
-    selectionFrame.createCanvas(selectionFrame.frame)
-    selectionFrame.createImage(1024/2,768/2,backGround)
-
-    gameDescription = getText('firstText.txt')
-    gameDevs = getText('secondText.txt')
-
-    selectionFrame.createText(gameDescription, 512, 125, "fixedsys", 10, None, colour = 'white')#check coordinates
-    selectionFrame.createText(gameDevs, 512, 425, "fixedsys", 8, None, colour = 'white')
-
-    startB = openImage('startfinal1.png')
-    backB = openImage('backfinal1.png')
-
-    selectionFrame.createButton(None, gamePage, buttonText = None, buttonImage = startB, packing = False)
-    selectionFrame.createButton(None, menuPage, buttonText = None, buttonImage = backB, packing = False)
-
-    selectionFrame.createWindow(512, 575, startB, h = 57, w = 292)
-    selectionFrame.createWindow(512, 650, backB, h = 57, w = 292)
-    
-
-def selectionPage(gameWindow):
-
-    menuFrame.destroy()
-    selectionFrame = GUI(gameWindow)
-
-    backGround = openImage('selection.gif')
-    
-    selectionFrame.createCanvas(selectionFrame.frame)
-    selectionFrame.createImage(1024/2,768/2,backGround)
-
-    
+if mainPage == True:
+    gui = Gui1(gameWindow)
+elif infoPage == True:
+    gui = Gui2(gameWindow)
 
 
 
-
-
-
-
-
-
-
-
-menuPage(gameWindow)
-
-
-
+print(infoPage)
 print('DONE')
 gameWindow.mainloop()
