@@ -1,20 +1,18 @@
+import tkinter as tk
 import sys
-from tkinter import *
 from PIL import Image, ImageTk
 import winsound
 
 
-gameWindow = Tk()
-mainPage = False
-infoPage = True
 
-def sound():    
-    winsound.PlaySound("SystemExit", winsound.SND_ALIAS)
 
 def openImage(filename):
     image = Image.open(filename)
     tkImage = ImageTk.PhotoImage(image)
     return tkImage
+
+def sound():    
+    winsound.PlaySound("SystemExit", winsound.SND_ALIAS)
 
 def getText(textFile):        
         try:
@@ -24,139 +22,301 @@ def getText(textFile):
         
         finally:
             f.close()
+def destroyy():
+    app.destroy()
 
-def setinfoPage():
-    mainPage = False
-    infoPage = True
-    
-    
-menuBackGround = openImage('shop.gif')
-infoBackGround = openImage('wolf.jpg')
-startB = openImage('startfinal1.png')
-infoB = openImage('informationfinal1.png')
-exitB = openImage('exitfinal1.png')
-backIcon = openImage('new.png')
-forwardIcon = openImage('forward.png')
-class Gui1():
-    ''' class for all graphical objects with functions for creating each of them'''
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Game Shop")
-        
-        self.frame = Frame(self.root)
-        self.frame.pack()
-        
-        self.canvas = Canvas(self.frame, width = 1024, height = 768, bg = "white")
-        self.canvas.pack()
-        self.canvas.create_image(1024/2,768/2,image = menuBackGround)
-        
-        self.button1 = Button(None, text = None, image = startB, command = sound,cursor = 'hand2')
-        self.button2 = Button(None, text = None, image = infoB, command = setinfoPage, cursor = 'hand2')
-        self.button3 = Button(None, text = None, image = exitB, command = gameWindow.destroy, cursor = 'hand2')
 
-        self.canvas.create_window(512, 500, height = 57, width = 292, window = self.button1)
-        self.canvas.create_window(512, 575, height = 57, width = 292, window = self.button2)
-        self.canvas.create_window(512, 650, height = 57, width = 292, window = self.button3)
+class GameShop(tk.Tk):
 
-    def destroy():
-        self.frame.destroy()
+    def __init__(self, *args, **kwargs):
 
-class Gui2():
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Game Shop")
-
-        self.frame = Frame(self.root)
-        self.frame.pack()
+        tk.Tk.__init__(self, *args,**kwargs)
+        tk.Tk.iconbitmap(self, default = "icon.ico")
+        container = tk.Frame(self)
+        self.title("Game Shop")
         
-        self.canvas = Canvas(self.frame, width = 1024, height = 768, bg = "white")
-        self.canvas.pack()
-        self.canvas.create_image(1024/2,768/2,image = infoBackGround)
+        container.pack(side = "top", fill = "both", expand = True)
+        container.grid_rowconfigure(0, weight = 1)
+        container.grid_columnconfigure(0, weight = 1)
+
+        self.frames = {}
+        for F in (StartPage, InfoPage, SelectionPage):
+            
+            frame = F(container, self)
+            
+            self.frames[F] = frame
+
+            frame.grid(row = 0, column = 0, sticky = "nsew")
+
+        self.show_frame(StartPage)
+
+    def show_frame(self, cont):
+
+        frame = self.frames[cont]
+        frame.tkraise()
+
+def qf(stringtoprint):
+    print(stringtoprint)
+
+class StartPage(tk.Frame):
+
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+
+        self.menuBackGround = openImage('menuPage.png')
         
-        self.canvas.create_text(512, 100, fill = 'pink', font = ("fixedsys", 32, "bold"), text = "INFORMATION" )
-        self.canvas.create_text(512, 450, fill = 'pink', font = ("fixedsys", 18), text = getText('text7.txt') )
-    
+        canvas1 = tk.Canvas(self, width = 1024, height = 768, bg = "white")
+        canvas1.create_image(1024/2,768/2,image = self.menuBackGround)
+        canvas1.pack()
+
+        button1 = tk.Button(canvas1, text = "START GAME", font = ("fixedsys",18), command = lambda: controller.show_frame(SelectionPage), cursor = 'hand2',borderwidth=3,foreground= "white", bg = "forest green", activebackground= "lime green", activeforeground= "white")
+        button1.place(x = 512, y = 500, height = 57, width = 292, anchor = 'n')
+        button2 = tk.Button(canvas1, text = "INFORMATION",font = ("fixedsys",18), command = lambda: controller.show_frame(InfoPage), cursor = 'hand2',borderwidth=3, foreground= "white", bg = "DodgerBlue3", activebackground= "DodgerBlue2", activeforeground= "white")
+        button2.place(x = 512, y = 575, height = 57, width = 292, anchor = 'n')
+        button3 = tk.Button(canvas1, text = "EXIT GAME",font = ("fixedsys",18), command = lambda: destroyy(), cursor = 'hand2', borderwidth= 3,foreground= "white", bg = "firebrick4", activebackground= "firebrick3", activeforeground= "white")
+        button3.place(x = 512, y = 650, height = 57, width = 292, anchor = 'n')
+
+
+class InfoPage(tk.Frame):
+
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+
+        self.infoBackGround = openImage('menuPage.png')
+        self.backIcon = openImage('back.png')
+        self.forwardIcon = openImage('for.png')
+       
+
+        canvas2 = tk.Canvas(self, width = 1024, height = 768, bg = "white")
+        canvas2.create_image(1024/2,768/2,image = self.infoBackGround)
+        canvas2.pack()
+
+        canvas2.create_text(512, 100, fill = 'grey6', font = ("fixedsys", 48, "bold"), text = "INFORMATION", justify = 'center' )
+        canvas2.create_text(512, 450, fill = 'grey6', font = ("fixedsys", 18), text = getText('text7.txt'),justify = 'center' )
+
         self.pageCount = 0
-        self.buttonBack = Button(None, text = None, image = backIcon, command = lambda : goBack(self.pageCount), cursor = 'hand2', state = DISABLED)
-        self.canvas.create_window(120, 450, height = 35, width = 35, window = self.buttonBack)
-        self.buttonForward = Button(None, text = None, image = forwardIcon, command = lambda : goForward(self.pageCount), cursor = 'hand2', state = NORMAL)
-        self.canvas.create_window(900, 450, height = 35, width = 35, window = self.buttonForward)
-        changeableText = self.canvas.create_text(512, 295, fill = 'pink', font = ("fixedsys", 18), text = getText('text1.txt'))
+        buttonBack = tk.Button(canvas2, text = "<", font = ("fixedsys",18,'bold'),state = 'disabled', command = lambda : goBack(self.pageCount), cursor = 'hand2', borderwidth = 3, foreground= "white", bg = "purple4", activebackground= "purple3", activeforeground= "white")
+        buttonBack.place(x = 100,y = 430, height = 35, width = 35)
+        buttonForward = tk.Button(canvas2, text = ">", font = ("fixedsys",18,'bold'), command = lambda : goForward(self.pageCount), cursor = 'hand2', borderwidth = 3, foreground= "white", bg = "purple4", activebackground= "purple3", activeforeground= "white")
+        buttonForward.place(x = 890,y = 430, height = 35, width = 35)
+        changeableText = canvas2.create_text(512, 295, fill = 'grey6', font = ("fixedsys", 18), text = getText('text1.txt'), justify = 'center')
 
-        self.button1 = Button(None, text = None, image = startB, command = sound, cursor = 'hand2')
-        self.button3 = Button(None, text = None, image = exitB, command = gameWindow.destroy, cursor = 'hand2')
-        self.canvas.create_window(512, 615, height = 57, width = 292, window = self.button1)
-        self.canvas.create_window(512, 685, height = 57, width = 292, window = self.button3)
-                                                      
-        def goForward(page):
-            print(self.pageCount)
-            self.pageCount = self.pageCount + 1
-            if page == 1:
+        button4 = tk.Button(canvas2, text = "START GAME", font = ("fixedsys",18), command = lambda: controller.show_frame(SelectionPage), cursor = 'hand2',borderwidth=3,foreground= "white", bg = "forest green", activebackground= "lime green", activeforeground= "white")
+        button4.place(x = 512, y = 575, height = 57, width = 292, anchor = 'n')
+        button5 = tk.Button(canvas2, text = "BACK", font = ("fixedsys",18), command = lambda : controller.show_frame(StartPage), cursor = 'hand2', borderwidth= 3,foreground= "white", bg = "dark orange", activebackground= "orange", activeforeground= "white")
+        button5.place(x = 512, y = 650, height = 57, width = 292, anchor = 'n')
+
+        def goForward(count):
+            #print(self.pageCount)
+            self.pageCount = count + 1
+            if  self.pageCount== 1:
                 txt = getText('text2.txt')
-                self.canvas.itemconfigure(changeableText, text = txt)
-            elif page == 2:
+                canvas2.itemconfigure(changeableText, text = txt)
+            elif self.pageCount == 2:
                 txt = getText('text3.txt')
-                self.canvas.itemconfigure(changeableText, text = txt)
-            elif page == 3:
+                canvas2.itemconfigure(changeableText, text = txt)
+            elif self.pageCount == 3:
                 txt = getText('text4.txt')
-                self.canvas.itemconfigure(changeableText, text = txt)
-            elif page == 4:
+                canvas2.itemconfigure(changeableText, text = txt)
+            elif self.pageCount == 4:
                 txt = getText('text5.txt')
-                self.canvas.itemconfigure(changeableText, text = txt)
-            elif page == 5:
+                canvas2.itemconfigure(changeableText, text = txt)
+            elif self.pageCount== 5:
                 txt = getText('text6.txt')
-                self.canvas.itemconfigure(changeableText, text = txt)
-                
-            if  page >0:
-                self.buttonBack.config(state = NORMAL)
-            else:
-                self.buttonBack.config(state = DISABLED)
-                
-            if page < 5:
-                self.buttonForward.config(state = NORMAL)
-            else:
-                self.buttonForward.config(state = DISABLED)
+                canvas2.itemconfigure(changeableText, text = txt)
 
             
-        def goBack(page):
-            print(self.pageCount)
-            self.pageCount = self.pageCount - 1
-            if page == 0:
+            if  self.pageCount >0:
+                buttonBack.config(state = 'normal')
+            else:
+                buttonBack.config(state = 'disabled')
+                
+            if self.pageCount < 5:
+                buttonForward.config(state ='normal')
+            else:
+                buttonForward.config(state = 'disabled')
+
+            
+        def goBack(count):
+            #print(self.pageCount)
+            self.pageCount = count - 1
+            if self.pageCount == 0:
                 txt = getText('text1.txt')
-                self.canvas.itemconfigure(changeableText, text = txt)
-            elif page == 1:
+                canvas2.itemconfigure(changeableText, text = txt)
+            elif self.pageCount == 1:
                 txt = getText('text2.txt')
-                self.canvas.itemconfigure(changeableText, text = txt)
-            elif page == 2:
+                canvas2.itemconfigure(changeableText, text = txt)
+            elif self.pageCount == 2:
                 txt = getText('text3.txt')
-                self.canvas.itemconfigure(changeableText, text = txt)
-            elif page == 3:
+                canvas2.itemconfigure(changeableText, text = txt)
+            elif self.pageCount == 3:
                 txt = getText('text4.txt')
-                self.canvas.itemconfigure(changeableText, text = txt)
-            elif page == 4:
+                canvas2.itemconfigure(changeableText, text = txt)
+            elif self.pageCount == 4:
                 txt = getText('text5.txt')
-                self.canvas.itemconfigure(changeableText, text = txt)
+                canvas2.itemconfigure(changeableText, text = txt)
 
-            if page > 0 :
-                self.buttonBack.config(state = NORMAL)
+            if self.pageCount > 0 :
+                buttonBack.config(state = 'normal')
             else:
-                self.buttonBack.config(state = DISABLED)
+                buttonBack.config(state = 'disabled')
                 
-            if page < 5:
-                self.buttonForward.config(state = NORMAL)
+            if self.pageCount < 5:
+                buttonForward.config(state = 'normal')
             else:
-                self.buttonForward.config(state = DISABLED)
-            
-   
+                buttonForward.config(state = 'disabled')
+
+class SelectionPage(tk.Frame):
+
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+
+        self.selectionBackGround = openImage('selectPage.png')
+        self.miniShop = openImage('miniShop.png')
+        self.activatedAction = False
+        self.activatedAdventure = False
+        self.activatedIndie = False
+        self.activatedPuzzle = False
+        self.activatedSports = False
+        
+        
+        
+        canvas3 = tk.Canvas(self, width = 1024, height = 768, bg = "lightBlue")
+        canvas3.create_image(1024/2,768/2,image = self.selectionBackGround)
+        canvas3.pack()
+
+        cButton1 = tk.Button(canvas3, text = "Action", font = ("fixedsys",12), command = lambda: expandGames(1), cursor = 'hand2', borderwidth = 3, foreground= "white", bg = "purple4", activebackground= "purple3", activeforeground= "white")
+        cButton1.place(x = 450, y = 100, height = 35, width = 90)
+        cButton2 = tk.Button(canvas3, text = "Adventure", font = ("fixedsys",12), command = lambda: expandGames(2), cursor = 'hand2', borderwidth = 3, foreground= "white", bg = "purple4",activebackground= "purple3",activeforeground= "white")
+        cButton2.place(x = 550, y = 100, height = 35, width = 90)
+        cButton3 = tk.Button(canvas3, text = "Indie", font = ("fixedsys", 12), command = lambda: expandGames(3), cursor = 'hand2', borderwidth = 3, foreground= "white", bg = "purple4",activebackground= "purple3",activeforeground= "white")
+        cButton3.place(x = 650, y = 100, height = 35, width = 90)
+        cButton4 = tk.Button(canvas3, text = "Puzzle", font = ("fixedsys", 12), command = lambda: expandGames(4), cursor = 'hand2', borderwidth = 3, foreground= "white", bg = "purple4",activebackground= "purple3",activeforeground= "white")
+        cButton4.place(x = 750, y = 100, height = 35, width = 90)
+        cButton5 = tk.Button(canvas3, text = "Sports", font = ("fixedsys",12), command = lambda: expandGames(5), cursor = 'hand2', borderwidth = 3, foreground= "white", bg = "purple4",activebackground= "purple3",activeforeground= "white")
+        cButton5.place(x = 850, y = 100, height = 35, width = 90)
+
+        canvas3.create_text(205, 62, fill = 'white', font = ("fixedsys", 24, "bold"), text = "YOUR SHOPPING LIST" )
+        canvas3.create_text(690, 62, fill = 'white', font = ("fixedsys", 24, "bold"), text = "SELECT YOUR GAMES" )
+        canvas3.create_text(660, 400, fill = 'white', font = ("fixedsys", 24, "bold"), text = "SELECT a STARTING POINT" )
+        canvas3.create_image(1024/3*2,768/3*2+75,image = self.miniShop)
+
+        def expandGames(category):
+
+            if category == 1:
+                print(self.activatedAction)
+                gameAc1 = tk.Button(canvas3, text = "1", font = ("fixedsys", 12),command = lambda: intolist('game1.gif'), cursor = 'hand2', borderwidth = 3)
+                gameAc1.pack()
+                gameAc2 = tk.Button(canvas3, text = "2", font = ("fixedsys", 12),command = lambda: sound(), cursor = 'hand2', borderwidth = 3)
+                gameAc3 = tk.Button(canvas3, text = "3", font = ("fixedsys", 12),command = lambda: sound(), cursor = 'hand2', borderwidth = 3)
+                gameAc4 = tk.Button(canvas3, text = "4", font = ("fixedsys", 12),command = lambda: sound(), cursor = 'hand2', borderwidth = 3)
+                if self.activatedAction == False:
+                    gameAc1.place(x = 460, y = 150, height = 42, width = 66)
+                    gameAc2.place(x = 460, y = 200, height = 42, width = 66)
+                    gameAc3.place(x = 460, y = 250, height = 42, width = 66)
+                    gameAc4.place(x = 460, y = 300, height = 42, width = 66)
+                    self.activatedAction = True
+                    print(self.activatedAction) 
+                elif self.activatedAction == True:
+                    gameAc1.destroy()
+                    gameAc2.destroy()
+                    gameAc3.destroy()
+                    gameAc4.destroy()
+                    self.activatedAction = False
+                    
+
+            if category == 2:
+                print(self.activatedAdventure)
+                gameAd1 = tk.Button(canvas3, text = "1", font = ("fixedsys", 12),command = lambda: sound(), cursor = 'hand2', borderwidth = 3)
+                gameAd2 = tk.Button(canvas3, text = "2", font = ("fixedsys", 12),command = lambda: sound(), cursor = 'hand2', borderwidth = 3)
+                gameAd3 = tk.Button(canvas3, text = "3", font = ("fixedsys", 12),command = lambda: sound(), cursor = 'hand2', borderwidth = 3)
+                gameAd4 = tk.Button(canvas3, text = "4", font = ("fixedsys", 12),command = lambda: sound(), cursor = 'hand2', borderwidth = 3)
+                if self.activatedAdventure == False:
+                    gameAd1.place(x = 560, y = 150, height = 42, width = 66)
+                    gameAd2.place(x = 560, y = 200, height = 42, width = 66)
+                    gameAd3.place(x = 560, y = 250, height = 42, width = 66)
+                    gameAd4.place(x = 560, y = 300, height = 42, width = 66)
+                    self.activatedAdventure = True
+                    
+                elif self.activatedAdventure == True:
+                    gameAd1.destroy()
+                    gameAd2.destroy()
+                    gameAd3.destroy()
+                    gameAd4.destroy()
+                    self.activatedAdventure = False
+
+            if category == 3:
+                print(self.activatedIndie)
+                gameI1 = tk.Button(canvas3, text = "1", font = ("fixedsys", 12),command = lambda: sound(), cursor = 'hand2', borderwidth = 3)
+                gameI2 = tk.Button(canvas3, text = "2", font = ("fixedsys", 12),command = lambda: sound(), cursor = 'hand2', borderwidth = 3)
+                gameI3 = tk.Button(canvas3, text = "3", font = ("fixedsys", 12),command = lambda: sound(), cursor = 'hand2', borderwidth = 3)
+                if self.activatedIndie == False:
+                    gameI1.place(x = 660, y = 150, height = 42, width = 66)
+                    gameI2.place(x = 660, y = 200, height = 42, width = 66)
+                    gameI3.place(x = 660, y = 250, height = 42, width = 66)
+                    self.activatedIndie = True
+                    
+                elif self.activatedIndie == True:
+                    gameI1.destroy()
+                    gameI2.destroy()
+                    gameI3.destroy()
+                    self.activatedIndie = False
+                    
+            if category == 4:
+                print(self.activatedPuzzle)
+                gameI1 = tk.Button(canvas3, text = "1", font = ("fixedsys", 12),command = lambda: sound(), cursor = 'hand2', borderwidth = 3)
+                gameI2 = tk.Button(canvas3, text = "2", font = ("fixedsys", 12),command = lambda: sound(), cursor = 'hand2', borderwidth = 3)
+                gameI3 = tk.Button(canvas3, text = "3", font = ("fixedsys", 12),command = lambda: sound(), cursor = 'hand2', borderwidth = 3)
+                if self.activatedPuzzle == False:
+                    gameI1.place(x = 760, y = 150, height = 42, width = 66)
+                    gameI2.place(x = 760, y = 200, height = 42, width = 66)
+                    gameI3.place(x = 760, y = 250, height = 42, width = 66)
+                    self.activatedPuzzle = True
+                    
+                elif self.activatedPuzzle == True:
+                    gameI1.destroy()
+                    gameI2.destroy()
+                    gameI3.destroy()
+                    self.activatedPuzzle = False
+
+            if category == 5:
+                print(self.activatedSports)
+                gameI1 = tk.Button(canvas3, text = "1", font = ("fixedsys", 12),command = lambda: sound(), cursor = 'hand2', borderwidth = 3)
+                gameI2 = tk.Button(canvas3, text = "2", font = ("fixedsys", 12),command = lambda: sound(), cursor = 'hand2', borderwidth = 3)
+                gameI3 = tk.Button(canvas3, text = "3", font = ("fixedsys", 12),command = lambda: sound(), cursor = 'hand2', borderwidth = 3)
+                if self.activatedSports == False:
+                    gameI1.place(x = 860, y = 150, height = 42, width = 66)
+                    gameI2.place(x = 860, y = 200, height = 42, width = 66)
+                    gameI3.place(x = 860, y = 250, height = 42, width = 66)
+                    self.activatedSports = True
+                    
+                elif self.activatedSports == True:
+                    gameI1.destroy()
+                    gameI2.destroy()
+                    gameI3.destroy()
+                    self.activatedSports= False
+                    
+        
+        def intolist(game):
+            self.imageG = openImage(game)
+            canvas3.create_image(1024/2,800/2, image = self.imageG)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         
 
-if mainPage == True:
-    gui = Gui1(gameWindow)
-elif infoPage == True:
-    gui = Gui2(gameWindow)
+app = GameShop()
+app.mainloop()
 
 
-
-print(infoPage)
-print('DONE')
-gameWindow.mainloop()
