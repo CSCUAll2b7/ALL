@@ -63,8 +63,7 @@ class GameShop(tk.Tk):
         frame = self.frames[cont]
         frame.tkraise()
 
-def qf(stringtoprint):
-    print(stringtoprint)
+
 
 class StartPage(tk.Frame):
 
