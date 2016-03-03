@@ -38,6 +38,7 @@ selectedGameList = []
 global imageDict
 imageDict = {}
 
+
 class Game():
     def __init__(self, ID, name, category, price, rating,imageName, x=0, y=0):
         self.ID = ID
@@ -49,6 +50,7 @@ class Game():
         self.X = 0
         self.Y = 0
 
+        global imageDict
         imageDict[ID] = self.imageName
         
 
@@ -100,7 +102,7 @@ class StartPage(tk.Frame):
         canvas1.pack()
 
         canvas1.create_text(512, 150, fill = 'grey6', font = ("fixedsys", 52, 'bold'), text = 'Welcome to the\nGame Shop',justify = 'center' )
-        #canvas1.create_image(512,300,image = self.menuIcon)
+
         
         button1 = tk.Button(canvas1, text = "START GAME", font = ("fixedsys",18), command = lambda: controller.show_frame(SelectionPage), cursor = 'hand2',borderwidth=3,foreground= "white", bg = "forest green", activebackground= "lime green", activeforeground= "white")
         button1.place(x = 512, y = 500, height = 57, width = 292, anchor = 'n')
@@ -176,7 +178,7 @@ class InfoPage(tk.Frame):
 
             
         def goBack(count):
-            #print(self.pageCount)
+
             self.pageCount = count - 1
             if self.pageCount == 0:
                 txt = getText('text1.txt')
@@ -214,8 +216,23 @@ class SelectionPage(tk.Frame):
         self.selectno=openImage('sel0.jpg')
         self.selectyes=openImage('sel1.png')
         self.menu=openImage('menu.png')
-        self.game1 = openImage('game1.gif')
-        self.game2 = openImage('game2.gif')
+        self.game1 = openImage(imageDict[1])
+        self.game2 = openImage(imageDict[2])
+        self.game3 = openImage(imageDict[3])
+        self.game4 = openImage(imageDict[4])
+        self.game5 = openImage(imageDict[5])
+        self.game6 = openImage(imageDict[6])
+        self.game7 = openImage(imageDict[7])
+        self.game8 = openImage(imageDict[8])
+        self.game9 = openImage(imageDict[9])
+        self.game10 = openImage(imageDict[10])
+        self.game11 = openImage(imageDict[11])
+        self.game12 = openImage(imageDict[12])
+        self.game13 = openImage(imageDict[13])
+        self.game14 = openImage(imageDict[14])
+        self.game15 = openImage(imageDict[15])
+        self.game16 = openImage(imageDict[16])
+        self.game17 = openImage(imageDict[17])
         self.activatedAction = False
         self.activatedAdventure = False
         self.activatedIndie = False
@@ -223,7 +240,9 @@ class SelectionPage(tk.Frame):
         self.activatedSports = False
         self.posCount = 0
         self.entrypos = 0
+        self.listCount =0
         self.checkPass = False
+        
         def setStart(pos):
             self.entrypos = pos
             print(str(self.entrypos))
@@ -261,57 +280,57 @@ class SelectionPage(tk.Frame):
         
         self.gameAc1 = tk.Button(canvas3, image = self.game1 ,command = lambda:  combine_funcs(intolist(1),displayList()), cursor = 'hand2', borderwidth = 3)
         self.gameAc2 = tk.Button(canvas3, image = self.game2 ,command = lambda: combine_funcs(intolist(2),displayList()), cursor = 'hand2', borderwidth = 3)
-        self.gameAc3 = tk.Button(canvas3, image = self.game2 ,command = lambda:combine_funcs(intolist(3),displayList()), cursor = 'hand2', borderwidth = 3)
-        self.gameAc4 = tk.Button(canvas3, image = self.game2 ,command = lambda:combine_funcs(intolist(4),displayList()), cursor = 'hand2', borderwidth = 3)
+        self.gameAc3 = tk.Button(canvas3, image = self.game3 ,command = lambda:combine_funcs(intolist(3),displayList()), cursor = 'hand2', borderwidth = 3)
+        self.gameAc4 = tk.Button(canvas3, image = self.game4 ,command = lambda:combine_funcs(intolist(4),displayList()), cursor = 'hand2', borderwidth = 3)
 
-        self.gameAd1 = tk.Button(canvas3, image = self.game2,command = lambda: combine_funcs(intolist(5),displayList()), cursor = 'hand2', borderwidth = 3)
-        self.gameAd2 = tk.Button(canvas3, image = self.game2,command = lambda: combine_funcs(intolist(6),displayList()), cursor = 'hand2', borderwidth = 3)
-        self.gameAd3 = tk.Button(canvas3, image = self.game2,command = lambda: combine_funcs(intolist(7),displayList()), cursor = 'hand2', borderwidth = 3)
-        self.gameAd4 = tk.Button(canvas3, image = self.game2,command = lambda: combine_funcs(intolist(8),displayList()), cursor = 'hand2', borderwidth = 3)
+        self.gameAd1 = tk.Button(canvas3, image = self.game5,command = lambda: combine_funcs(intolist(5),displayList()), cursor = 'hand2', borderwidth = 3)
+        self.gameAd2 = tk.Button(canvas3, image = self.game6,command = lambda: combine_funcs(intolist(6),displayList()), cursor = 'hand2', borderwidth = 3)
+        self.gameAd3 = tk.Button(canvas3, image = self.game7,command = lambda: combine_funcs(intolist(7),displayList()), cursor = 'hand2', borderwidth = 3)
+        self.gameAd4 = tk.Button(canvas3, image = self.game8,command = lambda: combine_funcs(intolist(8),displayList()), cursor = 'hand2', borderwidth = 3)
 
-        self.gameI1 = tk.Button(canvas3, image = self.game2,command = lambda: combine_funcs(intolist(9),displayList()), cursor = 'hand2', borderwidth = 3)
-        self.gameI2 = tk.Button(canvas3, image = self.game2,command = lambda: combine_funcs(intolist(10),displayList()), cursor = 'hand2', borderwidth = 3)
-        self.gameI3 = tk.Button(canvas3, image = self.game2,command = lambda: combine_funcs(intolist(11),displayList()), cursor = 'hand2', borderwidth = 3)
+        self.gameI1 = tk.Button(canvas3, image = self.game9,command = lambda: combine_funcs(intolist(9),displayList()), cursor = 'hand2', borderwidth = 3)
+        self.gameI2 = tk.Button(canvas3, image = self.game10,command = lambda: combine_funcs(intolist(10),displayList()), cursor = 'hand2', borderwidth = 3)
+        self.gameI3 = tk.Button(canvas3, image = self.game11,command = lambda: combine_funcs(intolist(11),displayList()), cursor = 'hand2', borderwidth = 3)
 
-        self.gameP1 = tk.Button(canvas3, text = "1", font = ("fixedsys", 12),command = lambda: combine_funcs(intolist(12),displayList()), cursor = 'hand2', borderwidth = 3)
-        self.gameP2 = tk.Button(canvas3, text = "2", font = ("fixedsys", 12),command = lambda: combine_funcs(intolist(13),displayList()), cursor = 'hand2', borderwidth = 3)
-        self.gameP3 = tk.Button(canvas3, text = "3", font = ("fixedsys", 12),command = lambda: combine_funcs(intolist(14),displayList()), cursor = 'hand2', borderwidth = 3)
+        self.gameP1 = tk.Button(canvas3,image = self.game12,command = lambda: combine_funcs(intolist(12),displayList()), cursor = 'hand2', borderwidth = 3)
+        self.gameP2 = tk.Button(canvas3,image = self.game13,command = lambda: combine_funcs(intolist(13),displayList()), cursor = 'hand2', borderwidth = 3)
+        self.gameP3 = tk.Button(canvas3, image = self.game14,command = lambda: combine_funcs(intolist(14),displayList()), cursor = 'hand2', borderwidth = 3)
 
-        self.gameS1 = tk.Button(canvas3, text = "1", font = ("fixedsys", 12),command = lambda: combine_funcs(intolist(15),displayList()), cursor = 'hand2', borderwidth = 3)
-        self.gameS2 = tk.Button(canvas3, text = "2", font = ("fixedsys", 12),command = lambda: combine_funcs(intolist(16),displayList()), cursor = 'hand2', borderwidth = 3)
-        self.gameS3 = tk.Button(canvas3, text = "3", font = ("fixedsys", 12),command = lambda: combine_funcs(intolist(17),displayList()), cursor = 'hand2', borderwidth = 3)
+        self.gameS1 = tk.Button(canvas3, image = self.game15,command = lambda: combine_funcs(intolist(15),displayList()), cursor = 'hand2', borderwidth = 3)
+        self.gameS2 = tk.Button(canvas3, image = self.game16,command = lambda: combine_funcs(intolist(16),displayList()), cursor = 'hand2', borderwidth = 3)
+        self.gameS3 = tk.Button(canvas3, image = self.game17,command = lambda: combine_funcs(intolist(17),displayList()), cursor = 'hand2', borderwidth = 3)
         
         def createGameButtons(cat, state):
             
             if cat == 1 and state == False:
-                self.gameAc1 = tk.Button(canvas3, image = self.game2 ,command = lambda: intolist(1), cursor = 'hand2', borderwidth = 3)
+                self.gameAc1 = tk.Button(canvas3, image = self.game1 ,command = lambda: intolist(1), cursor = 'hand2', borderwidth = 3)
                 self.gameAc2 = tk.Button(canvas3, image = self.game2 ,command = lambda: intolist(2), cursor = 'hand2', borderwidth = 3)
-                self.gameAc3 = tk.Button(canvas3, image = self.game2 ,command = lambda: intolist(3), cursor = 'hand2', borderwidth = 3)
-                self.gameAc4 = tk.Button(canvas3, image = self.game2 ,command = lambda: intolist(4), cursor = 'hand2', borderwidth = 3)
+                self.gameAc3 = tk.Button(canvas3, image = self.game3 ,command = lambda: intolist(3), cursor = 'hand2', borderwidth = 3)
+                self.gameAc4 = tk.Button(canvas3, image = self.game4 ,command = lambda: intolist(4), cursor = 'hand2', borderwidth = 3)
                 
             elif cat == 2 and state == False:
-                self.gameAd1 = tk.Button(canvas3, image = self.game2,command = lambda: intolist(5), cursor = 'hand2', borderwidth = 3)
-                self.gameAd2 = tk.Button(canvas3, image = self.game2,command = lambda: intolist(6), cursor = 'hand2', borderwidth = 3)
-                self.gameAd3 = tk.Button(canvas3, image = self.game2,command = lambda: intolist(7), cursor = 'hand2', borderwidth = 3)
-                self.gameAd4 = tk.Button(canvas3, image = self.game2,command = lambda: intolist(8), cursor = 'hand2', borderwidth = 3)
+                self.gameAd1 = tk.Button(canvas3, image = self.game5,command = lambda: intolist(5), cursor = 'hand2', borderwidth = 3)
+                self.gameAd2 = tk.Button(canvas3, image = self.game6,command = lambda: intolist(6), cursor = 'hand2', borderwidth = 3)
+                self.gameAd3 = tk.Button(canvas3, image = self.game7,command = lambda: intolist(7), cursor = 'hand2', borderwidth = 3)
+                self.gameAd4 = tk.Button(canvas3, image = self.game8,command = lambda: intolist(8), cursor = 'hand2', borderwidth = 3)
                 
             elif cat == 3 and state == False:
 
-                self.gameI1 = tk.Button(canvas3, image = self.game2,command = lambda: intolist(9), cursor = 'hand2', borderwidth = 3)
-                self.gameI2 = tk.Button(canvas3, image = self.game2,command = lambda: intolist(10), cursor = 'hand2', borderwidth = 3)
-                self.gameI3 = tk.Button(canvas3, image = self.game2,command = lambda: intolist(11), cursor = 'hand2', borderwidth = 3)
+                self.gameI1 = tk.Button(canvas3, image = self.game9,command = lambda: intolist(9), cursor = 'hand2', borderwidth = 3)
+                self.gameI2 = tk.Button(canvas3, image = self.game10,command = lambda: intolist(10), cursor = 'hand2', borderwidth = 3)
+                self.gameI3 = tk.Button(canvas3, image = self.game11,command = lambda: intolist(11), cursor = 'hand2', borderwidth = 3)
 
             elif cat == 4 and state == False:
                 
-                self.gameP1 = tk.Button(canvas3, text = "1", font = ("fixedsys", 12),command = lambda: intolist(12), cursor = 'hand2', borderwidth = 3)
-                self.gameP2 = tk.Button(canvas3, text = "2", font = ("fixedsys", 12),command = lambda: intolist(13), cursor = 'hand2', borderwidth = 3)
-                self.gameP3 = tk.Button(canvas3, text = "3", font = ("fixedsys", 12),command = lambda: intolist(14), cursor = 'hand2', borderwidth = 3)
+                self.gameP1 = tk.Button(canvas3, image = self.game12,command = lambda: intolist(12), cursor = 'hand2', borderwidth = 3)
+                self.gameP2 = tk.Button(canvas3, image = self.game13,command = lambda: intolist(13), cursor = 'hand2', borderwidth = 3)
+                self.gameP3 = tk.Button(canvas3, image = self.game14,command = lambda: intolist(14), cursor = 'hand2', borderwidth = 3)
 
             elif cat == 5 and state == False:
 
-                self.gameS1 = tk.Button(canvas3, text = "1", font = ("fixedsys", 12),command = lambda: intolist(15), cursor = 'hand2', borderwidth = 3)
-                self.gameS2 = tk.Button(canvas3, text = "2", font = ("fixedsys", 12),command = lambda: intolist(16), cursor = 'hand2', borderwidth = 3)
-                self.gameS3 = tk.Button(canvas3, text = "3", font = ("fixedsys", 12),command = lambda: intolist(17), cursor = 'hand2', borderwidth = 3)
+                self.gameS1 = tk.Button(canvas3, image = self.game15,command = lambda: intolist(15), cursor = 'hand2', borderwidth = 3)
+                self.gameS2 = tk.Button(canvas3, image = self.game16,command = lambda: intolist(16), cursor = 'hand2', borderwidth = 3)
+                self.gameS3 = tk.Button(canvas3, image = self.game17,command = lambda: intolist(17), cursor = 'hand2', borderwidth = 3)
             
 
         def expandGames(category):
@@ -412,16 +431,20 @@ class SelectionPage(tk.Frame):
         
         def intolist(gameID):
             #adds selected games into global list for selected games that will be submited for searching
-            selectedGameList.append(gameID)
-
+            if self.listCount<7 and gameID not in selectedGameList:
+                selectedGameList.append(gameID)
+                self.listCount+=1
+            
         def displayList():
             #prints on screen(shopping list) selected games
             global imageDict
-            posx = 1024/2
-            posy = 800/2
-            for game in selectedGameList:                
-                canvas3.create_image(posx, posy, image =  openImage(imageDict[game]))
-                posy = posy + 100             
+            posx = 1024/2-450
+            posy = 800/2-270
+            for game in selectedGameList:
+                img = openImage(imageDict[game])
+                gameLabel = tk.Label (canvas3, text = game)
+                gameLabel.place(x = posx, y = posy)
+                posy = posy + 70             
 
         def confirm():
             #makes 'confirm' button available only when game list is not empty and starting point is selected
@@ -437,13 +460,20 @@ class GamePage(tk.Frame):
         self.gameBackground = openImage('shop1.png')
         var = int()
         var2 = int()
+        self.dec = int()
+        self.dec =0
+        
         canvas4 = tk.Canvas(self, width = 1024, height = 768, bg = "white")
         canvas4.create_image(1024/2,768/2,image = self.gameBackground)
         canvas4.pack()
+        player = canvas4.create_rectangle(96, 64, 96+32, 64+32,fill= 'blue' )
+        
         startButton = tk.Button(canvas4, text = "START", font = ("fixedsys",18),state = 'disabled', command = lambda: combine_funcs(setTime(), self.minutes.destroy(), self.seconds.destroy(), showTime(), startButton.config(state = 'disabled')), cursor = 'hand2',borderwidth=3,foreground= "white", bg = "forest green", activebackground= "lime green", activeforeground= "white")
         startButton.place(x = 512, y = 694, height = 57, width = 292, anchor = 'n')
+        
         timeLabel = tk.Label(canvas4, font = ("fixedsys",48),activebackground='grey10', activeforeground='white',background= 'grey10', foreground= 'white',justify= 'center')
         timeLabel.place(x = 550, y = 600)
+        
         selectSorting1 = tk.Radiobutton(canvas4,variable = var, value = 1,selectcolor = 'purple', text="Shell sort", font = ("fixedsys",12), bg = 'grey10', command = lambda: selectSorting(1), fg = 'white', cursor = 'hand2')
         selectSorting1.place (x = 700, y = 610)
         selectSorting2 = tk.Radiobutton(canvas4,variable = var, value = 2, selectcolor = 'purple', text="Quick sort", font = ("fixedsys",12), bg = 'grey10', command = lambda: selectSorting(2), fg = 'white',cursor = 'hand2')
@@ -457,13 +487,28 @@ class GamePage(tk.Frame):
         selectSorting6 = tk.Radiobutton(canvas4,variable = var2,value = 3, selectcolor= 'pink', text="Rating sort", font = ("fixedsys",12), bg = 'grey10', command = lambda: selectSortingBy(3), fg = 'white', cursor = 'hand2')
         selectSorting6.place (x = 850, y = 670)
         
+        selectDec = tk.Checkbutton(canvas4, text = 'Decreasing', variable = self.dec, onvalue = 1, offvalue = 0, font = ("fixedsys",12), fg = 'white', bg = 'grey10',cursor = 'hand2',selectcolor= 'grey10')
+        selectDec.place (x = 765, y = 710)
        
         self.minutes = tk.Spinbox (canvas4, from_=0, to = 10,cursor = 'hand2', fg = 'grey8', font = ("fixedsys",32), width = 2, command = lambda: startButton.config(state='normal'))
         self.minutes.place(x = 370, y = 620)
         self.seconds = tk.Spinbox (canvas4, from_=0, to = 59, cursor = 'hand2', fg = 'grey8', font = ("fixedsys",32), width = 2, command = lambda: startButton.config(state='normal'))
         self.seconds.place(x = 525, y = 620)
-
+        
+        self.gamesToBuy = selectedGameList[]
+        self.possiblePlace = []
+        self.collectedGames = []
+        
+        def checkType():
+            x = self.dec
+            return x
+        
         def selectSorting(x):
+            inc = checkType()
+            if inc == 0:
+                pass
+            elif inc ==1:
+                pass
             print(str(x))
 
         def selectSortingBy(x):
@@ -476,34 +521,32 @@ class GamePage(tk.Frame):
             s = int(self.seconds.get())
             print(str(s))
             sec = m*60+s
-    
+
+        def showInventory(self):
+            if self.collectedGames != []:
+                sortGames(self.collectedGames)
+                for i in self.collectedGames:
+                    pass
+
+                ###################################
+        
         def showTime():
             global sec
             if sec >0:
                 sec-=1
                 timeLabel['text'] = sec
+                #collision()
+                #showInventory()
                 canvas4.after(1000, showTime)
             else:
                 controller.show_frame(StartPage)
                 sec = 1
             
             canvas4.create_text(510,665,text = "Time Left:      s" ,font = ("fixedsys",24),fill = 'white',justify= 'center')
+            
         timeLabel = tk.Label(canvas4, font = ("fixedsys",48),activebackground='grey10', activeforeground='white',background= 'grey10', foreground= 'white',justify= 'center')
         timeLabel.place(x = 545, y = 610)
 
-        def playerMovement():
-            self.ScreenX1 = 100.0
-            self.ScreenY1 = 36.0
-            self.ScreenX2 = 990.0
-            self.ScreenY2 = 325.0
-
-            self.vx = 32.0
-            self.vy = 32.0
-
-            player = canvas4.create_image()
-
-            canvas4.coords(player, x = x+self.vx , y = y + self.vy)
-            pass
 
 
 
@@ -516,26 +559,25 @@ class GamePage(tk.Frame):
 
 
 
-
-
-iGame1 = Game(1, 'CS:GO', 'Action', 23, 5,'game1.gif')
-iGame2 = Game(2,'GTA 5', 'Action', 40, 5, 'game2.gif')
-iGame3 = Game(3,'XCOM2', 'Action', 20, 4, 'game3.gif')
+iGame1 = Game(1, 'BattleField', 'Action', 23, 5,'game1.gif')
+iGame2 = Game(2,'GTA 5', 'Action', 40, 5, 'game2.png')
+iGame3 = Game(3,'XCOM2', 'Action', 20, 4, 'game3.png')
 iGame4 = Game(4,'Call Of Duty','Action', 10, 3,'game4.gif' )
-iGame5 = Game(5,'Sonic','Adventure', 4, 3,'game5.gif')
-iGame6 = Game(6,'DayZ', 'Adventure',20, 2, 'game6.gif')
+iGame5 = Game(5,'Sonic','Adventure', 4, 3,'game5.png')
+iGame6 = Game(6,'DayZ', 'Adventure',20, 2, 'game6.png')
 iGame7 = Game(7,'Witcher 3', 'Adventure',50, 4, 'game7.gif')
-iGame8 = Game(8, 'Fall Out 4','Adventure', 40, 5, 'game8.gif')
-iGame9 = Game(9, 'Limbo' ,'Indie',3,4,'game9.gif')
-iGame10 = Game(10,'Undertale', 'Indie', 5, 4, 'game10.gif')
-iGame11 = Game(11,'To The Moon','Indie', 2, 3, 'game11.gif')
-iGame12 = Game(12,'Little Big Planet','Puzzle', 6, 2 , 'game12.gif')
-iGame13 = Game(13,'Infra', 'Puzzle',11,2, 'game13.gif')
-iGame14 = Game(14,'Puzzle Stages','Puzzle', 1,1,'game14.gif')
-iGame15 = Game(15,'The Crew', 'Sports',13, 3, 'game15.gif')
+iGame8 = Game(8, 'Fall Out 4','Adventure', 40, 5, 'game8.png')
+iGame9 = Game(9, 'Limbo' ,'Indie',3,4,'game9.png')
+iGame10 = Game(10,'Undertale', 'Indie', 5, 4, 'game10.png')
+iGame11 = Game(11,'To The Moon','Indie', 2, 3, 'game11.png')
+iGame12 = Game(12,'Little Big Planet','Puzzle', 6, 2 , 'game12.png')
+iGame13 = Game(13,'Infra', 'Puzzle',11,2, 'game13.png')
+iGame14 = Game(14,'Puzzle Stages','Puzzle', 1,1,'game14.png')
+iGame15 = Game(15,'The Crew', 'Sports',13, 3, 'game15.png')
 iGame16 = Game(16,'Fifa 15','Sports', 25, 4, 'game16.gif')
 iGame17 = Game(17,'Need for Speed','Sports', 5, 4, 'game17.gif')
 
 
 app = GameShop()
 app.mainloop()
+
