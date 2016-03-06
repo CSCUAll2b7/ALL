@@ -5,7 +5,7 @@ import winsound
 import time
 
 
-
+############################# Global functions
 def openImage(filename):
     image = Image.open(filename)
     tkImage = ImageTk.PhotoImage(image)
@@ -22,43 +22,45 @@ def getText(textFile):
         
         finally:
             f.close()
-def destroyy():
-    app.destroy()
 
 def combine_funcs(*funcs):
     def combined_func(*args, **kwargs):
         for f in funcs:
             f(*args, **kwargs)
     return combined_func
-
+#############################   Global variables:
 global sec
 sec = 1  
 global selectedGameList
 selectedGameList = []
-global imageDict
+global imageDict, labelDict
 imageDict = {}
-
-
+labelDict = {}
+global playerStartPos
+playerStartPos = ()
+############################
 class Game():
-    def __init__(self, ID, name, category, price, rating,imageName, x=0, y=0):
+    def __init__(self, ID, name, category, price, rating,imageName, labelName, x=0, y=0):
         self.ID = ID
         self.name = name
         self.categ = category
         self.price = price
         self.rating = rating
         self.imageName = imageName
+        self.labelName = labelName
         self.X = 0
         self.Y = 0
 
-        global imageDict
+        global imageDict, labelDict
         imageDict[ID] = self.imageName
+        labelDict[ID] = self.labelName
         
 
     def setCoord(self, x, y):
         
         self.X = x
         self.Y = y
-
+########################################################################################################
 
 class GameShop(tk.Tk):
 
@@ -89,7 +91,7 @@ class GameShop(tk.Tk):
         frame = self.frames[cont]
         frame.tkraise()
 
-
+##############################################################################################################################################
 class StartPage(tk.Frame):
 
     def __init__(self, parent, controller):
@@ -108,10 +110,10 @@ class StartPage(tk.Frame):
         button1.place(x = 512, y = 500, height = 57, width = 292, anchor = 'n')
         button2 = tk.Button(canvas1, text = "INFORMATION",font = ("fixedsys",18), command = lambda: controller.show_frame(InfoPage), cursor = 'hand2',borderwidth=3, foreground= "white", bg = "DodgerBlue3", activebackground= "DodgerBlue2", activeforeground= "white")
         button2.place(x = 512, y = 575, height = 57, width = 292, anchor = 'n')
-        button3 = tk.Button(canvas1, text = "EXIT GAME",font = ("fixedsys",18), command = lambda: destroyy(), cursor = 'hand2', borderwidth= 3,foreground= "white", bg = "firebrick4", activebackground= "firebrick3", activeforeground= "white")
+        button3 = tk.Button(canvas1, text = "EXIT GAME",font = ("fixedsys",18), command = lambda: app.destroy(), cursor = 'hand2', borderwidth= 3,foreground= "white", bg = "firebrick4", activebackground= "firebrick3", activeforeground= "white")
         button3.place(x = 512, y = 650, height = 57, width = 292, anchor = 'n')
 
-
+#############################################################################################################################################
 class InfoPage(tk.Frame):
 
     def __init__(self, parent, controller):
@@ -126,7 +128,7 @@ class InfoPage(tk.Frame):
         canvas2.create_image(1024/2,768/2,image = self.infoBackGround)
         canvas2.pack()
 
-        canvas2.create_text(512, 100, fill = 'grey6', font = ("fixedsys", 48, "bold"), text = "INFORMATION", justify = 'center' )
+        canvas2.create_text(512, 100, fill = 'grey6', font = ("fixedsys", 48, "bold"), text = "INFORMATION", justify = 'center')
         canvas2.create_text(512, 450, fill = 'grey6', font = ("fixedsys", 18), text = getText('text7.txt'),justify = 'center' )
 
         self.pageCount = 0
@@ -205,7 +207,7 @@ class InfoPage(tk.Frame):
                 buttonForward.config(state = 'normal')
             else:
                 buttonForward.config(state = 'disabled')
-
+########################################################################################################################
 class SelectionPage(tk.Frame):
 
     def __init__(self, parent, controller):
@@ -233,6 +235,26 @@ class SelectionPage(tk.Frame):
         self.game15 = openImage(imageDict[15])
         self.game16 = openImage(imageDict[16])
         self.game17 = openImage(imageDict[17])
+
+        self.game1L = openImage(labelDict[1])
+        self.game2L = openImage(labelDict[2])
+        self.game3L = openImage(labelDict[3])
+        self.game4L = openImage(labelDict[4])
+        self.game5L = openImage(labelDict[5])
+        self.game6L = openImage(labelDict[6])
+        self.game7L = openImage(labelDict[7])
+        self.game8L = openImage(labelDict[8])
+        self.game9L = openImage(labelDict[9])
+        self.game10L = openImage(labelDict[10])
+        self.game11L = openImage(labelDict[11])
+        self.game12L = openImage(labelDict[12])
+        self.game13L = openImage(labelDict[13])
+        self.game14L = openImage(labelDict[14])
+        self.game15L = openImage(labelDict[15])
+        self.game16L = openImage(labelDict[16])
+        self.game17L = openImage(labelDict[17])
+
+        
         self.activatedAction = False
         self.activatedAdventure = False
         self.activatedIndie = False
@@ -244,8 +266,13 @@ class SelectionPage(tk.Frame):
         self.checkPass = False
         
         def setStart(pos):
-            self.entrypos = pos
-            print(str(self.entrypos))
+            if pos == 1:
+                gamer.startPos = (1,0)
+                Player.updatePos(gamer,1, 0)
+            elif pos == 2:
+                gamer.startPos = (8,25)
+                Player.updatePos(gamer,8, 25)
+            print(str(gamer.startPos))
         
         canvas3 = tk.Canvas(self, width = 1024, height = 768, bg = "lightBlue")
         canvas3.create_image(1024/2,768/2,image = self.selectionBackGround)
@@ -440,9 +467,27 @@ class SelectionPage(tk.Frame):
             global imageDict
             posx = 1024/2-450
             posy = 800/2-270
+            alist = []
+            alist=[self.game1L, 
+            self.game2L,
+            self.game3L,
+            self.game4L,
+            self.game5L, 
+            self.game6L,
+            self.game7L,
+            self.game8L,
+            self.game9L,
+            self.game10L,
+            self.game11L,
+            self.game12L,
+            self.game13L ,
+            self.game14L ,
+            self.game15L,
+            self.game16L,
+            self.game17L]
+            
             for game in selectedGameList:
-                img = openImage(imageDict[game])
-                gameLabel = tk.Label (canvas3, text = game)
+                gameLabel = tk.Label(canvas3, image = alist[game-1])
                 gameLabel.place(x = posx, y = posy)
                 posy = posy + 70             
 
@@ -450,8 +495,170 @@ class SelectionPage(tk.Frame):
             #makes 'confirm' button available only when game list is not empty and starting point is selected
             if len(selectedGameList)>0:
                 confirmButton.config(state = 'normal')
+#############################################################################################################
+
+class node:
+    """Class used to store an X and Y cordanat"""
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+        
+    def __eq__(self, other):
+        return ((self.x, self.y) ==
+                (other.x, other.y))
+    
+    def __hash__(self):
+        return hash((self.x, self.y))
+
+class PathFind:
+    """As a constructior it takes a 2D array with 0's where the robot can go and 1's where it cant"""
+    def __init__(self,matrix, boundsx, boundsy):
+        self.boundsx = boundsx
+        self.boundsy = boundsy
+        self.array = matrix
+    """Returns a list (reverse order) or the nodes to go to in orger to get to the obective, or false if its imposible. Takes 2 nodes, starting position and end position. """
+    def AStar(self, start, goal):
+
+        matrix = self.array
+        closedSet = []
+        
+        openSet = [start]
+
+        cameFrom = {}
+
+        gScore = {}
+        gScore[start] = 0
+
+        fScore = {}
+        fScore[start] = self.heuristic_cost_estimate(start, goal)
+
+        
+        while openSet != [] :
+            
+            current = self.lowestValueInDict(openSet, fScore)
+            if current.x == goal.x and current.y == goal.y:
+                return self.reconstruct_path(cameFrom, goal)
+            
+            openSet.remove(current)
+            closedSet.append(current)
+
+            neighbors = []
+            if current.x > 0:
+                if matrix[current.x -1][current.y] == 0:
+                    neighbors.append(node(current.x -1, current.y))
+            if current.y > 0:
+                if matrix[current.x][current.y - 1] == 0:
+                    neighbors.append(node(current.x, current.y - 1))
+
+            if current.x != self.boundsx - 1:
+                if matrix[current.x + 1][current.y] == 0:
+                        neighbors.append(node(current.x + 1, current.y))
+
+            if current.y != self.boundsy - 1:    
+                if matrix[current.x][current.y + 1] == 0:
+                        neighbors.append(node(current.x, current.y + 1))
+            for neighbor in neighbors:
+                if self.contains(closedSet, neighbor):
+                    continue
+                
+                tentative_gScore = gScore[current] + 1#1 being distance betwen nodes
+
+                if not self.contains(openSet, neighbor):
+                    openSet.append(neighbor)
+                elif tentative_gScore >= gScore[neighbor]:
+                    continue
+                #if it got here that measn it is the best posible route
+                cameFrom[neighbor] = current
+                gScore[neighbor] = tentative_gScore
+                fScore[neighbor] = gScore[neighbor] + self.heuristic_cost_estimate(neighbor, goal)
+             
+        return False
+            
+            
+
+    def heuristic_cost_estimate(self, start, end):
+        #this should work but should idealy be the minimum posible path
+        x = abs( start.x - end.x)
+        y = abs(start.y - end.y)
+
+        return x + y
+    
+    def contains(self, array, val):
+        for x in array:
+            if x == val:
+                return True
+        return False
+
+    def lowestValueInDict(self, openSet, dic):
+        lowestVal = None
+        lowestKey = ""
+
+        for value in openSet:
+            score = dic[value]
+            if lowestVal == None or score < lowestVal:
+                lowestKey = value
+                lowestVal = score
+                
+        return lowestKey
+
+    def reconstruct_path(self, cameFrom, current):
+        total_path = [current]
+        while current in cameFrom:
+            current = cameFrom[current]
+            total_path.append(current)
+        total_path.reverse()
+        return total_path
+            
 
 
+def array():
+   
+    Matrix =[	[ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+		[ 0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1],
+		[ 1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1],
+		[ 1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1],
+		[ 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+		[ 1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1],
+		[ 1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1],
+		[ 1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1],
+		[ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1],
+                [ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [ 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]]
+ 
+   
+    return Matrix
+    
+
+def getPath(startx, starty, finishx,finishy):
+    print(str(startx)+' ' +str(starty)+' ' +str( finishy)+' '+str(finishx))
+    listcoord = []
+    c= 0
+    Path = PathFind(array(),27, 27)
+    path = Path.AStar(node(startx,starty), node(finishy,finishx))
+    for point in path:   
+        coo = point.x, point.y
+        listcoord.append(coo)
+        c+=1
+    return(listcoord)
+
+##############################################################################################################
 class GamePage(tk.Frame):
 
     def __init__(self, parent, controller):
@@ -462,13 +669,31 @@ class GamePage(tk.Frame):
         var2 = int()
         self.dec = int()
         self.dec =0
+
+        self.game1 = openImage(imageDict[1])
+        self.game2 = openImage(imageDict[2])
+        self.game3 = openImage(imageDict[3])
+        self.game4 = openImage(imageDict[4])
+        self.game5 = openImage(imageDict[5])
+        self.game6 = openImage(imageDict[6])
+        self.game7 = openImage(imageDict[7])
+        self.game8 = openImage(imageDict[8])
+        self.game9 = openImage(imageDict[9])
+        self.game10 = openImage(imageDict[10])
+        self.game11 = openImage(imageDict[11])
+        self.game12 = openImage(imageDict[12])
+        self.game13 = openImage(imageDict[13])
+        self.game14 = openImage(imageDict[14])
+        self.game15 = openImage(imageDict[15])
+        self.game16 = openImage(imageDict[16])
+        self.game17 = openImage(imageDict[17])
         
         canvas4 = tk.Canvas(self, width = 1024, height = 768, bg = "white")
         canvas4.create_image(1024/2,768/2,image = self.gameBackground)
         canvas4.pack()
-        player = canvas4.create_rectangle(96, 64, 96+32, 64+32,fill= 'blue' )
         
-        startButton = tk.Button(canvas4, text = "START", font = ("fixedsys",18),state = 'disabled', command = lambda: combine_funcs(setTime(), self.minutes.destroy(), self.seconds.destroy(), showTime(), startButton.config(state = 'disabled')), cursor = 'hand2',borderwidth=3,foreground= "white", bg = "forest green", activebackground= "lime green", activeforeground= "white")
+        
+        startButton = tk.Button(canvas4, text = "START", font = ("fixedsys",18),state = 'disabled', command = lambda: combine_funcs(setTime(), self.minutes.destroy(), self.seconds.destroy(), drawPlayer(),showTime(), movePlayer(),startButton.config(state = 'disabled')), cursor = 'hand2',borderwidth=3,foreground= "white", bg = "forest green", activebackground= "lime green", activeforeground= "white")
         startButton.place(x = 512, y = 694, height = 57, width = 292, anchor = 'n')
         
         timeLabel = tk.Label(canvas4, font = ("fixedsys",48),activebackground='grey10', activeforeground='white',background= 'grey10', foreground= 'white',justify= 'center')
@@ -490,20 +715,92 @@ class GamePage(tk.Frame):
         selectDec = tk.Checkbutton(canvas4, text = 'Decreasing', variable = self.dec, onvalue = 1, offvalue = 0, font = ("fixedsys",12), fg = 'white', bg = 'grey10',cursor = 'hand2',selectcolor= 'grey10')
         selectDec.place (x = 765, y = 710)
        
-        self.minutes = tk.Spinbox (canvas4, from_=0, to = 10,cursor = 'hand2', fg = 'grey8', font = ("fixedsys",32), width = 2, command = lambda: startButton.config(state='normal'))
+        self.minutes = tk.Spinbox (canvas4, from_=0, to = 10,cursor = 'hand2', fg = 'grey8', font = ("fixedsys",32), width = 2, command = lambda: combine_funcs(startButton.config(state='normal'),placeGamesToCollect()))
         self.minutes.place(x = 370, y = 620)
         self.seconds = tk.Spinbox (canvas4, from_=0, to = 59, cursor = 'hand2', fg = 'grey8', font = ("fixedsys",32), width = 2, command = lambda: startButton.config(state='normal'))
         self.seconds.place(x = 525, y = 620)
         
-        self.gamesToBuy = selectedGameList[]
-        self.possiblePlace = []
+        self.gamesToBuy = selectedGameList
         self.collectedGames = []
+
+        def drawPlayer():
+            print(str(gamer.startPos[0]*32+101))
+            print(str(gamer.startPos[1]*32+64))
+            print(str(gamer.startPos[0]*32+101+32))
+            print(str(gamer.startPos[1]*32+64+32))
+            self.player = canvas4.create_rectangle(gamer.startPos[1]*32+101, gamer.startPos[0]*32+32, gamer.startPos[1]*32+101+32, gamer.startPos[0]*32+64,fill= 'blue' )
+            
+        
+        def placeGamesToCollect():
+            self.gamesToBuy = selectedGameList
+            self.coordList = [(133,224-32),(261,288-32),(421,96-32),(581,288-32),(709,96-32),(901,96-32),(485,192-32),(133,288-32),(325,288-32),(514,96-32),(261,160-32),(453,288-32),(613,128-32),(837,288-32),(709,288-32),(901,192-32),(805,192-32)]
+            self.coordDict = {}
+            for game in self.gamesToBuy:
+                self.coordDict[game] = self.coordList[game-1]
+            for game in self.gamesToBuy:
+                c1 = self.coordDict[game]
+                x1,y1 = c1
+                if game == 1:
+                    self.inGame1 = tk.Label(canvas4, image = self.game1)
+                    self.inGame1.place(x = x1, y = y1)
+                if game == 2:
+                    self.inGame2 = tk.Label(canvas4, image = self.game2)
+                    self.inGame2.place(x = x1, y = y1)
+                if game == 3:
+                    self.inGame3 = tk.Label(canvas4, image = self.game3)
+                    self.inGame3.place(x = x1, y = y1)
+                if game == 4:
+                    self.inGame4 = tk.Label(canvas4, image = self.game4)
+                    self.inGame4.place(x = x1, y = y1)
+                if game == 5:
+                    self.inGame5 = tk.Label(canvas4, image = self.game5)
+                    self.inGame5.place(x = x1, y = y1)
+                if game == 6:
+                    self.inGame6 = tk.Label(canvas4, image = self.game6)
+                    self.inGame6.place(x = x1, y = y1)
+                if game == 7:
+                    self.inGame7 = tk.Label(canvas4, image = self.game7)
+                    self.inGame7.place(x = x1, y = y1)
+                if game == 8:
+                    self.inGame8 = tk.Label(canvas4, image = self.game8)
+                    self.inGame8.place(x = x1, y = y1)
+                if game == 9:
+                    self.inGame9 = tk.Label(canvas4, image = self.game9)
+                    self.inGame9.place(x = x1, y = y1)
+                if game == 10:
+                    self.inGame10 = tk.Label(canvas4, image = self.game10)
+                    self.inGame10.place(x = x1, y = y1)
+                if game == 11:
+                    self.inGame11 = tk.Label(canvas4, image = self.game11)
+                    self.inGame11.place(x = x1, y = y1)
+                if game == 12:
+                    self.inGame12 = tk.Label(canvas4, image = self.game12)
+                    self.inGame12.place(x = x1, y = y1)
+                if game == 13:
+                    self.inGame13 = tk.Label(canvas4, image = self.game13)
+                    self.inGame13.place(x = x1, y = y1)
+                if game == 14:
+                    self.inGame14 = tk.Label(canvas4, image = self.game14)
+                    self.inGame14.place(x = x1, y = y1)
+                if game == 15:
+                    self.inGame15 = tk.Label(canvas4, image = self.game15)
+                    self.inGame15.place(x = x1, y = y1)
+                if game == 16:
+                    self.inGame16 = tk.Label(canvas4, image = self.game16)
+                    self.inGame16.place(x = x1, y = y1)
+                if game == 17:
+                    self.inGame17 = tk.Label(canvas4, image = self.game17)
+                    self.inGame17.place(x = x1, y = y1)
+
+                
+
         
         def checkType():
             x = self.dec
             return x
         
         def selectSorting(x):
+            print(str(self.coordDict))
             inc = checkType()
             if inc == 0:
                 pass
@@ -532,52 +829,89 @@ class GamePage(tk.Frame):
         
         def showTime():
             global sec
-            if sec >0:
+            if sec >0 and self.coordDict != {}:
                 sec-=1
                 timeLabel['text'] = sec
-                #collision()
-                #showInventory()
                 canvas4.after(1000, showTime)
             else:
                 controller.show_frame(StartPage)
                 sec = 1
             
-            canvas4.create_text(510,665,text = "Time Left:      s" ,font = ("fixedsys",24),fill = 'white',justify= 'center')
+            canvas4.create_text(505,665,text = "Time Left:       s" ,font = ("fixedsys",24),fill = 'white',justify= 'center')
+
+        def walk(path):
+            i=0
+            while i < len(path):
+                x,y= path[i]
+                canvas4.move(self.player, x*32+101,y*32+32 )
+                gamer.updatePos(x,y)
+                time.sleep(0.5)
+                i+=1
+
+        def movePlayer():
+            
+            lenght = len(self.gamesToBuy)
+            for i in range(lenght):
+                if gamer.startPos == (1,0):
+                    toFind = min(self.coordDict, key = self.coordDict.get)
+                else:
+                    toFind = max(self.coordDict, key = self.coordDict.get)
+                    
+                fx, fy = self.coordDict[toFind]
+                self.coordDict.pop(toFind)
+                fx = (fx - 101)//32
+                fy = (fy - 32)//32
+                path = getPath(gamer.xpos,gamer.ypos, fx,fy)
+                print(str(path))
+                walk(path)
+
+
+            
+
+            
             
         timeLabel = tk.Label(canvas4, font = ("fixedsys",48),activebackground='grey10', activeforeground='white',background= 'grey10', foreground= 'white',justify= 'center')
         timeLabel.place(x = 545, y = 610)
+#############################################################################################################################################################################
+
+class Player():
+    def __init__(self, image, xpos = 0, ypos= 0, startingPosition = (0,0)):
+        self.image = image
+        self.startPos = startingPosition
+        self.xpos = xpos
+        self.ypos = ypos
+
+    def updatePos(self, xnew, ynew):
+        self.xpos = xnew
+        self.ypos = ynew
 
 
 
+##############################################################################################################################################
 
 
 
-
-
-
-
-
-
-
-iGame1 = Game(1, 'BattleField', 'Action', 23, 5,'game1.gif')
-iGame2 = Game(2,'GTA 5', 'Action', 40, 5, 'game2.png')
-iGame3 = Game(3,'XCOM2', 'Action', 20, 4, 'game3.png')
-iGame4 = Game(4,'Call Of Duty','Action', 10, 3,'game4.gif' )
-iGame5 = Game(5,'Sonic','Adventure', 4, 3,'game5.png')
-iGame6 = Game(6,'DayZ', 'Adventure',20, 2, 'game6.png')
-iGame7 = Game(7,'Witcher 3', 'Adventure',50, 4, 'game7.gif')
-iGame8 = Game(8, 'Fall Out 4','Adventure', 40, 5, 'game8.png')
-iGame9 = Game(9, 'Limbo' ,'Indie',3,4,'game9.png')
-iGame10 = Game(10,'Undertale', 'Indie', 5, 4, 'game10.png')
-iGame11 = Game(11,'To The Moon','Indie', 2, 3, 'game11.png')
-iGame12 = Game(12,'Little Big Planet','Puzzle', 6, 2 , 'game12.png')
-iGame13 = Game(13,'Infra', 'Puzzle',11,2, 'game13.png')
-iGame14 = Game(14,'Puzzle Stages','Puzzle', 1,1,'game14.png')
-iGame15 = Game(15,'The Crew', 'Sports',13, 3, 'game15.png')
-iGame16 = Game(16,'Fifa 15','Sports', 25, 4, 'game16.gif')
-iGame17 = Game(17,'Need for Speed','Sports', 5, 4, 'game17.gif')
+gamer = Player('player.png')
+iGame1 = Game(1, 'BattleField', 'Action', 23, 5,'game1.gif', 'lbl1.png')
+iGame2 = Game(2,'GTA 5', 'Action', 40, 5, 'game2.png','lbl2.png')
+iGame3 = Game(3,'XCOM2', 'Action', 20, 4, 'game3.png','lbl3.png')
+iGame4 = Game(4,'Call Of Duty','Action', 10, 3,'game4.gif','lbl4.png' )
+iGame5 = Game(5,'Sonic','Adventure', 4, 3,'game5.png','lbl5.png')
+iGame6 = Game(6,'DayZ', 'Adventure',20, 2, 'game6.png','lbl6.png')
+iGame7 = Game(7,'Witcher 3', 'Adventure',50, 4, 'game7.gif','lbl7.png')
+iGame8 = Game(8, 'Fall Out 4','Adventure', 40, 5, 'game8.png','lbl8.png')
+iGame9 = Game(9, 'Limbo' ,'Indie',3,4,'game9.png','lbl9.png')
+iGame10 = Game(10,'Undertale', 'Indie', 5, 4, 'game10.png','lbl10.png')
+iGame11 = Game(11,'To The Moon','Indie', 2, 3, 'game11.png','lbl11.png')
+iGame12 = Game(12,'Little Big Planet','Puzzle', 6, 2 , 'game12.png','lbl12.png')
+iGame13 = Game(13,'Infra', 'Puzzle',11,2, 'game13.png','lbl13.png')
+iGame14 = Game(14,'Puzzle Stages','Puzzle', 1,1,'game14.png','lbl14.png')
+iGame15 = Game(15,'The Crew', 'Sports',13, 3, 'game15.png','lbl15.png')
+iGame16 = Game(16,'Fifa 15','Sports', 25, 4, 'game16.gif','lbl16.png')
+iGame17 = Game(17,'Need for Speed','Sports', 5, 4, 'game17.gif','lbl17.png')
 
 
 app = GameShop()
 app.mainloop()
+
 
