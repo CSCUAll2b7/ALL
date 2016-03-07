@@ -2,8 +2,8 @@ import tkinter as tk
 import sys
 from PIL import Image, ImageTk
 import winsound
-import time
-
+from time import *
+from random import randint
 
 ############################# Global functions
 def openImage(filename):
@@ -28,6 +28,18 @@ def combine_funcs(*funcs):
         for f in funcs:
             f(*args, **kwargs)
     return combined_func
+
+def binarySearch(selectedGameList, gameID):
+            if len(selectedGameList) != 0:
+                mid = len(selectedGameList)//2
+                if selectedGameList[mid]==gameID:
+                    return True
+                elif gameID < selectedGameList[mid]:
+                    return binarySearch(selectedGameList[:mid], gameID)
+                else:
+                    return binarySearch(selectedGameList[mid+1:], gameID)
+            else:
+                return False
 #############################   Global variables:
 global sec
 sec = 1  
@@ -454,11 +466,12 @@ class SelectionPage(tk.Frame):
                     self.activatedSports = True
                 else:
                     self.activatedSports = False
-                    
-        
+
+            
         def intolist(gameID):
             #adds selected games into global list for selected games that will be submited for searching
-            if self.listCount<7 and gameID not in selectedGameList:
+            inGameList = binarySearch(selectedGameList, gameID)
+            if self.listCount<7 and not inGameList:
                 selectedGameList.append(gameID)
                 self.listCount+=1
             
@@ -665,10 +678,12 @@ class GamePage(tk.Frame):
         tk.Frame.__init__(self, parent)
 
         self.gameBackground = openImage('shop1.png')
-        var = int()
-        var2 = int()
+        var = tk.IntVar()
+        var2 = tk.IntVar()
         self.dec = int()
         self.dec =0
+        self.increasing = True
+        self.budget = randint(70,90)
 
         self.game1 = openImage(imageDict[1])
         self.game2 = openImage(imageDict[2])
@@ -693,7 +708,7 @@ class GamePage(tk.Frame):
         canvas4.pack()
         
         
-        startButton = tk.Button(canvas4, text = "START", font = ("fixedsys",18),state = 'disabled', command = lambda: combine_funcs(setTime(), self.minutes.destroy(), self.seconds.destroy(), drawPlayer(),showTime(), movePlayer(),startButton.config(state = 'disabled')), cursor = 'hand2',borderwidth=3,foreground= "white", bg = "forest green", activebackground= "lime green", activeforeground= "white")
+        startButton = tk.Button(canvas4, text = "START", font = ("fixedsys",18),state = 'disabled', command = lambda: combine_funcs(setTime(), self.minutes.destroy(), self.seconds.destroy(), showTime(), movePlayer(),startButton.config(state = 'disabled')), cursor = 'hand2',borderwidth=3,foreground= "white", bg = "forest green", activebackground= "lime green", activeforeground= "white")
         startButton.place(x = 512, y = 694, height = 57, width = 292, anchor = 'n')
         
         timeLabel = tk.Label(canvas4, font = ("fixedsys",48),activebackground='grey10', activeforeground='white',background= 'grey10', foreground= 'white',justify= 'center')
@@ -705,14 +720,14 @@ class GamePage(tk.Frame):
         selectSorting2.place (x = 700, y = 640)
         selectSorting3 = tk.Radiobutton(canvas4,variable = var,value = 3, selectcolor= 'purple', text="Merge sort", font = ("fixedsys",12), bg = 'grey10', command = lambda: selectSorting(3), fg = 'white', cursor = 'hand2')
         selectSorting3.place (x = 700, y = 670)
-        selectSorting4 = tk.Radiobutton(canvas4,variable = var2, value = 1,selectcolor = 'pink', text="Name sort", font = ("fixedsys",12), bg = 'grey10', command = lambda: selectSortingBy(1), fg = 'white', cursor = 'hand2')
+        selectSorting4 = tk.Radiobutton(canvas4,variable = var2, value = 1,selectcolor = 'blue', text="Name sort", font = ("fixedsys",12), bg = 'grey10', command = lambda: selectSortingBy(1), fg = 'white', cursor = 'hand2')
         selectSorting4.place (x = 850, y = 610)
-        selectSorting5 = tk.Radiobutton(canvas4,variable = var2, value = 2, selectcolor = 'pink', text="Price sort", font = ("fixedsys",12), bg = 'grey10', command = lambda: selectSortingBy(2), fg = 'white',cursor = 'hand2')
+        selectSorting5 = tk.Radiobutton(canvas4,variable = var2, value = 2, selectcolor = 'blue', text="Price sort", font = ("fixedsys",12), bg = 'grey10', command = lambda: selectSortingBy(2), fg = 'white',cursor = 'hand2')
         selectSorting5.place (x = 850, y = 640)
-        selectSorting6 = tk.Radiobutton(canvas4,variable = var2,value = 3, selectcolor= 'pink', text="Rating sort", font = ("fixedsys",12), bg = 'grey10', command = lambda: selectSortingBy(3), fg = 'white', cursor = 'hand2')
+        selectSorting6 = tk.Radiobutton(canvas4,variable = var2,value = 3, selectcolor= 'blue', text="Rating sort", font = ("fixedsys",12), bg = 'grey10', command = lambda: selectSortingBy(3), fg = 'white', cursor = 'hand2')
         selectSorting6.place (x = 850, y = 670)
         
-        selectDec = tk.Checkbutton(canvas4, text = 'Decreasing', variable = self.dec, onvalue = 1, offvalue = 0, font = ("fixedsys",12), fg = 'white', bg = 'grey10',cursor = 'hand2',selectcolor= 'grey10')
+        selectDec = tk.Checkbutton(canvas4, text = 'Decreasing', variable = self.dec, onvalue = 1, offvalue = 0,command = lambda:checkType(False), font = ("fixedsys",12), fg = 'white', bg = 'grey10',cursor = 'hand2',selectcolor= 'grey10')
         selectDec.place (x = 765, y = 710)
        
         self.minutes = tk.Spinbox (canvas4, from_=0, to = 10,cursor = 'hand2', fg = 'grey8', font = ("fixedsys",32), width = 2, command = lambda: combine_funcs(startButton.config(state='normal'),placeGamesToCollect()))
@@ -722,19 +737,13 @@ class GamePage(tk.Frame):
         
         self.gamesToBuy = selectedGameList
         self.collectedGames = []
-
-        def drawPlayer():
-            print(str(gamer.startPos[0]*32+101))
-            print(str(gamer.startPos[1]*32+64))
-            print(str(gamer.startPos[0]*32+101+32))
-            print(str(gamer.startPos[1]*32+64+32))
-            self.player = canvas4.create_rectangle(gamer.startPos[1]*32+101, gamer.startPos[0]*32+32, gamer.startPos[1]*32+101+32, gamer.startPos[0]*32+64,fill= 'blue' )
             
         
         def placeGamesToCollect():
             self.gamesToBuy = selectedGameList
             self.coordList = [(133,224-32),(261,288-32),(421,96-32),(581,288-32),(709,96-32),(901,96-32),(485,192-32),(133,288-32),(325,288-32),(514,96-32),(261,160-32),(453,288-32),(613,128-32),(837,288-32),(709,288-32),(901,192-32),(805,192-32)]
             self.coordDict = {}
+            self.additionalDict = {}
             for game in self.gamesToBuy:
                 self.coordDict[game] = self.coordList[game-1]
             for game in self.gamesToBuy:
@@ -743,74 +752,279 @@ class GamePage(tk.Frame):
                 if game == 1:
                     self.inGame1 = tk.Label(canvas4, image = self.game1)
                     self.inGame1.place(x = x1, y = y1)
+                    self.additionalDict[self.inGame1] = 1
                 if game == 2:
                     self.inGame2 = tk.Label(canvas4, image = self.game2)
                     self.inGame2.place(x = x1, y = y1)
+                    self.additionalDict[self.inGame2] = 2
                 if game == 3:
                     self.inGame3 = tk.Label(canvas4, image = self.game3)
                     self.inGame3.place(x = x1, y = y1)
+                    self.additionalDict[self.inGame3] = 3
                 if game == 4:
                     self.inGame4 = tk.Label(canvas4, image = self.game4)
                     self.inGame4.place(x = x1, y = y1)
+                    self.additionalDict[self.inGame4] = 4
                 if game == 5:
                     self.inGame5 = tk.Label(canvas4, image = self.game5)
                     self.inGame5.place(x = x1, y = y1)
+                    self.additionalDict[self.inGame5] = 5
                 if game == 6:
                     self.inGame6 = tk.Label(canvas4, image = self.game6)
                     self.inGame6.place(x = x1, y = y1)
+                    self.additionalDict[self.inGame6] = 6
                 if game == 7:
                     self.inGame7 = tk.Label(canvas4, image = self.game7)
                     self.inGame7.place(x = x1, y = y1)
+                    self.additionalDict[self.inGame7] = 7
                 if game == 8:
                     self.inGame8 = tk.Label(canvas4, image = self.game8)
                     self.inGame8.place(x = x1, y = y1)
+                    self.additionalDict[self.inGame8] = 8
                 if game == 9:
                     self.inGame9 = tk.Label(canvas4, image = self.game9)
                     self.inGame9.place(x = x1, y = y1)
+                    self.additionalDict[self.inGame9] = 9
                 if game == 10:
                     self.inGame10 = tk.Label(canvas4, image = self.game10)
                     self.inGame10.place(x = x1, y = y1)
+                    self.additionalDict[self.inGame10] = 10
                 if game == 11:
                     self.inGame11 = tk.Label(canvas4, image = self.game11)
                     self.inGame11.place(x = x1, y = y1)
+                    self.additionalDict[self.inGame11] = 11
                 if game == 12:
                     self.inGame12 = tk.Label(canvas4, image = self.game12)
                     self.inGame12.place(x = x1, y = y1)
+                    self.additionalDict[self.inGame12] = 12
                 if game == 13:
                     self.inGame13 = tk.Label(canvas4, image = self.game13)
                     self.inGame13.place(x = x1, y = y1)
+                    self.additionalDict[self.inGame13] = 13
                 if game == 14:
                     self.inGame14 = tk.Label(canvas4, image = self.game14)
                     self.inGame14.place(x = x1, y = y1)
+                    self.additionalDict[self.inGame14] = 14
                 if game == 15:
                     self.inGame15 = tk.Label(canvas4, image = self.game15)
                     self.inGame15.place(x = x1, y = y1)
+                    self.additionalDict[self.inGame15] = 15
                 if game == 16:
                     self.inGame16 = tk.Label(canvas4, image = self.game16)
                     self.inGame16.place(x = x1, y = y1)
+                    self.additionalDict[self.inGame16] = 16
                 if game == 17:
                     self.inGame17 = tk.Label(canvas4, image = self.game17)
                     self.inGame17.place(x = x1, y = y1)
+                    self.additionalDict[self.inGame17] = 17
 
-                
+            self.player = tk.Label(canvas4, font = ("fixedsys",32), text = 'O')
+            #self.player.place( x= gamer.xpos*32+101, y = gamer.ypos*32+64)
 
-        
-        def checkType():
-            x = self.dec
+        def shellSort(increasing,price, name):
+            if increasing == True:
+                inc = len(price) // 2
+                while inc:
+                    for i in range(len(price)):
+                        j = i
+                        temp = price[i]
+                        temp2= name[i]
+                        #add here if need to be sorted
+                        while j >= inc and price[j-inc] > temp:
+                            price[j] = price[j - inc]
+                            name[j] = name[j- inc]
+                            #add here if need to be sorted
+                            j -= inc
+                        price[j] = temp
+                        name[j] = temp2
+                        #add here if need to be sorted
+                    inc = inc//2 if inc//2 else (0 if inc==1 else 1)
+            else:
+
+                inc = len(price) // 2
+                while inc:
+                    for i in range(len(price)):
+                        j = i
+                        temp = price[i]
+                        temp2= name[i]
+                        #add here if need to be sorted
+                        while j >= inc and price[j-inc] < temp:
+                            price[j] = price[j - inc]
+                            name[j] = name[j- inc]
+                            #add here if need to be sorted
+                            j -= inc
+                        price[j] = temp
+                        name[j] = temp2
+                        #add here if need to be sorted
+                    inc = inc//2 if inc//2 else (0 if inc==1 else 1)
+
+
+        def quickSort(increasing, alist, name):#add here
+           quickSortHelper(alist,0,len(alist)-1, name)#add here
+
+        def quickSortHelper(alist,first,last, name):#add here
+           if first<last:
+
+               splitpoint = partition(alist,first,last, name)#add here
+
+               quickSortHelper(alist,first,splitpoint-1, name)#add here
+               quickSortHelper(alist,splitpoint+1,last, name)#add here
+
+
+        def partition(alist,first,last,name):#add here
+           pivotvalue = alist[first]
+
+           leftmark = first+1
+           rightmark = last
+
+           done = False
+           while not done:
+
+               while leftmark <= rightmark and alist[leftmark] <= pivotvalue:
+                   leftmark = leftmark + 1
+
+               while alist[rightmark] >= pivotvalue and rightmark >= leftmark:
+                   rightmark = rightmark -1
+
+               if rightmark < leftmark:
+                   done = True
+               else:
+                   temp = alist[leftmark]
+                   alist[leftmark] = alist[rightmark]
+                   alist[rightmark] = temp
+                   temp2 = name[leftmark]
+                   name[leftmark] = name[rightmark]
+                   name[rightmark] = temp2
+                   #add here
+
+           temp = alist[first]
+           alist[first] = alist[rightmark]
+           alist[rightmark] = temp
+           temp2 = name[first]
+           name[first] = name[rightmark]
+           name[rightmark] = temp2
+           #add here
+
+
+           return rightmark
+
+
+        def mergeSort(increasing,price,name):#add here
+
+            if increasing == True:
+                if len(price)>1:
+                    mid = len(price)//2
+                    lefthalf = price[:mid]
+                    righthalf = price[mid:]
+                    lefthalf2 = name[:mid]
+                    righthalf2 = name[mid:]
+                    #add here
+
+                    mergeSort(lefthalf,lefthalf2)#add here
+                    mergeSort(righthalf,righthalf2)#add here
+
+                    i=0
+                    j=0
+                    k=0
+                    while i < len(lefthalf) and j < len(righthalf):
+                        if lefthalf[i] < righthalf[j]:
+                            price[k]=lefthalf[i]
+                            name[k]=lefthalf2[i]
+                            #add here
+                            i=i+1
+                        else:
+                            price[k]=righthalf[j]
+                            name[k]=righthalf2[j]
+                            #add here
+                            j=j+1
+                        k=k+1
+
+                    while i < len(lefthalf):
+                        price[k]=lefthalf[i]
+                        name[k]=lefthalf2[i]
+                        #add here
+                        i=i+1
+                        k=k+1
+
+                    while j < len(righthalf):
+                        price[k]=righthalf[j]
+                        name[k]=righthalf2[j]
+                        #add here
+                        j=j+1
+                        k=k+1
+
+                else:
+
+                    if len(price)>1:
+                        mid = len(price)//2
+                        lefthalf = price[:mid]
+                        righthalf = price[mid:]
+                        lefthalf2 = name[:mid]
+                        righthalf2 = name[mid:]
+                        #add here
+
+                        mergeSort(lefthalf,lefthalf2)#add here
+                        mergeSort(righthalf,righthalf2)#add here
+
+                        i=0
+                        j=0
+                        k=0
+                        while i < len(lefthalf) and j < len(righthalf):
+                            if lefthalf[i] > righthalf[j]:
+                                price[k]=lefthalf[i]
+                                name[k]=lefthalf2[i]
+                                #add here
+                                i=i+1
+                            else:
+                                price[k]=righthalf[j]
+                                name[k]=righthalf2[j]
+                                #add here
+                                j=j+1
+                            k=k+1
+
+                        while i < len(lefthalf):
+                            price[k]=lefthalf[i]
+                            name[k]=lefthalf2[i]
+                            #add here
+                            i=i+1
+                            k=k+1
+
+                        while j < len(righthalf):
+                            price[k]=righthalf[j]
+                            name[k]=righthalf2[j]
+                            #add here
+                            j=j+1
+                            k=k+1
+
+            
+        def checkType(x):
+            self.increasing = x
+            print(str(self.increasing))
             return x
         
         def selectSorting(x):
-            print(str(self.coordDict))
-            inc = checkType()
-            if inc == 0:
-                pass
-            elif inc ==1:
-                pass
+            
+            if x == 1:
+                shellSort(self.increasing,price, name)
+            elif x == 2:
+                quickSort(True,alist, name)
+                if self.increasing == False:
+                    alist.reverse()
+                    name.reverse()
+            elif x == 3:
+                mergeSort(self.increasing,price,name)
+
+                
             print(str(x))
 
         def selectSortingBy(x):
-            print(str(x))
-        
+            if x == 1:
+                pass#name
+            elif x == 2:
+                pass#price
+            elif x == 3:
+                pass#rating
+         
         def setTime():
             global sec
             m = int(self.minutes.get())
@@ -829,24 +1043,26 @@ class GamePage(tk.Frame):
         
         def showTime():
             global sec
-            if sec >0 and self.coordDict != {}:
+            if sec >0 :
                 sec-=1
                 timeLabel['text'] = sec
-                canvas4.after(1000, showTime)
             else:
-                controller.show_frame(StartPage)
+                #controller.show_frame(StartPage)
                 sec = 1
             
             canvas4.create_text(505,665,text = "Time Left:       s" ,font = ("fixedsys",24),fill = 'white',justify= 'center')
 
         def walk(path):
-            i=0
-            while i < len(path):
-                x,y= path[i]
-                canvas4.move(self.player, x*32+101,y*32+32 )
-                gamer.updatePos(x,y)
-                time.sleep(0.5)
+            i= 0
+            while i < len(path) and sec>0 :
+                Y,X= path[i]
+                self.player.place(x= X*32+101,y = Y*32 +32)
+                canvas4.update()
+                gamer.updatePos(Y,X)
+                sleep(0.5)
                 i+=1
+                canvas4.after(500, showTime)
+
 
         def movePlayer():
             
@@ -862,24 +1078,35 @@ class GamePage(tk.Frame):
                 fx = (fx - 101)//32
                 fy = (fy - 32)//32
                 path = getPath(gamer.xpos,gamer.ypos, fx,fy)
-                print(str(path))
                 walk(path)
+                self.collectedGames.append(toFind)
+                
+                inventoryLabel['text'] = self.collectedGames
+                collectedStatus['text'] = 'Games collected: ' + str(len(self.collectedGames)) + ' / '+ str(len(self.gamesToBuy))
+                budgetStatus['text'] = 'Budget: '+ str(self.budget)
+            canvas4.create_text(500, 380, text = 'GAME OVER', font = ('fixedsys',52), fill = 'red', justify= 'center')
+                
+                
 
 
             
 
-            
-            
+        collectedStatus = tk.Label(canvas4, text = 'Games collected: ',font = ("fixedsys",16),activebackground='grey10', activeforeground='white',background= 'grey10',foreground= 'white',justify= 'center')
+        collectedStatus.place(x =90,y= 610)
+        budgetStatus = tk.Label(canvas4, text = 'Budget: ',font = ("fixedsys",16),activebackground='grey10', activeforeground='white',background= 'grey10',foreground= 'white',justify= 'center')
+        budgetStatus.place(x =90,y= 650)
+        inventoryLabel = tk.Label(canvas4, font = ("fixedsys",24),activebackground='grey10', activeforeground='white',background= 'grey10',foreground= 'white',justify= 'center')
+        inventoryLabel.place(x = 200, y =700)
         timeLabel = tk.Label(canvas4, font = ("fixedsys",48),activebackground='grey10', activeforeground='white',background= 'grey10', foreground= 'white',justify= 'center')
         timeLabel.place(x = 545, y = 610)
 #############################################################################################################################################################################
 
 class Player():
-    def __init__(self, image, xpos = 0, ypos= 0, startingPosition = (0,0)):
+    def __init__(self, image, startingPosition = (0,0)):
         self.image = image
         self.startPos = startingPosition
-        self.xpos = xpos
-        self.ypos = ypos
+        self.xpos = startingPosition[0]
+        self.ypos =  startingPosition[1]
 
     def updatePos(self, xnew, ynew):
         self.xpos = xnew
@@ -915,3 +1142,5 @@ app = GameShop()
 app.mainloop()
 
 
+
+        
