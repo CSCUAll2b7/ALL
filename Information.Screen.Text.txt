@@ -1,0 +1,6 @@
+The Game Shop is the shop you want to be in, with all the games you could possibly imagine all in one place, you wouldn’t ever want to leave. /n
+Initiall the game requires you to select games, you can choose up to a maximum of 6 games with a random generated budget between £70 - £100. Your chosen games will then be shown to you. /n
+Once the games have been confirmed, you will then be asked to choose your starting location, you will be shown two separate starting locations, one of which you must choose to start with. /n
+The game will now begin, your player will now start collecting the games of which you have selected, trying to get as many games as it can before the time limit is reached. /n
+Whilst the game is being played, you will be able to sort the games once collecting according to Price, Popularity/ Rating or Name./n
+When all games have been collected or time has run out, the game will end and display the results page which will contain the best score. /n
