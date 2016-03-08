@@ -6,7 +6,8 @@ from time import *
 from random import randint
 
 ############################# Global functions
-def openImage(filename):
+
+def openImage(filename): # opens all type of images for further use
     image = Image.open(filename)
     tkImage = ImageTk.PhotoImage(image)
     return tkImage
@@ -14,7 +15,7 @@ def openImage(filename):
 def sound():    
     winsound.PlaySound("SystemExit", winsound.SND_ALIAS)
 
-def getText(textFile):        
+def getText(textFile): # opens text file, reads info from it and then closes it
         try:
             f = open(textFile, "r")
             text = f.read()
@@ -23,24 +24,26 @@ def getText(textFile):
         finally:
             f.close()
 
-def combine_funcs(*funcs):
+def combine_funcs(*funcs): # combines multiple functions given for further use when passed as command
     def combined_func(*args, **kwargs):
         for f in funcs:
             f(*args, **kwargs)
     return combined_func
 
-def binarySearch(selectedGameList, gameID):
+def binarySearch(selectedGameList, gameID):  #binary search that takes a list and an object and returns true if that object is in the list, and otherwise - false
             if len(selectedGameList) != 0:
                 mid = len(selectedGameList)//2
                 if selectedGameList[mid]==gameID:
                     return True
                 elif gameID < selectedGameList[mid]:
-                    return binarySearch(selectedGameList[:mid], gameID)
+                    return binarySearch(selectedGameList[:mid], gameID) # recursion until object is found or none is left 
                 else:
                     return binarySearch(selectedGameList[mid+1:], gameID)
             else:
                 return False
+            
 #############################   Global variables:
+            
 global sec
 sec = 1  
 global selectedGameList
@@ -50,8 +53,10 @@ imageDict = {}
 labelDict = {}
 global playerStartPos
 playerStartPos = ()
+
 ############################
 class Game():
+    '''class for defining a game'''
     def __init__(self, ID, name, category, price, rating,imageName, labelName, x=0, y=0):
         self.ID = ID
         self.name = name
@@ -64,18 +69,18 @@ class Game():
         self.Y = 0
 
         global imageDict, labelDict
-        imageDict[ID] = self.imageName
-        labelDict[ID] = self.labelName
+        imageDict[ID] = self.imageName  #puts game id as a key and game image as a value into a dict
+        labelDict[ID] = self.labelName  #puts game id as a key and game label used for shopping list into a dict
         
 
-    def setCoord(self, x, y):
+    def setCoord(self, x, y): # idk if used
         
         self.X = x
         self.Y = y
 ########################################################################################################
 
 class GameShop(tk.Tk):
-
+    '''GUI class for creating the game window and swiching between frames'''
     def __init__(self, *args, **kwargs):
 
         tk.Tk.__init__(self, *args,**kwargs)
@@ -84,11 +89,11 @@ class GameShop(tk.Tk):
         self.title("Game Shop")
         
         container.pack(side = "top", fill = "both", expand = True)
-        container.grid_rowconfigure(0, weight = 1)
-        container.grid_columnconfigure(0, weight = 1)
+        #container.grid_rowconfigure(0, weight = 1)
+        #container.grid_columnconfigure(0, weight = 1)
 
-        self.frames = {}
-        for F in (StartPage, InfoPage, SelectionPage, GamePage):
+        self.frames = {} #all game frames
+        for F in (StartPage, InfoPage, SelectionPage, GamePage): #if new frame is created add it here
             
             frame = F(container, self)
             
@@ -105,63 +110,69 @@ class GameShop(tk.Tk):
 
 ##############################################################################################################################################
 class StartPage(tk.Frame):
-
+    '''GUI class that sets all widgets in the startpage '''
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
 
+        #setting the background 
         self.menuBackGround = openImage('menuPage.png')
         self.menuIcon = openImage ('ps4.png')
         canvas1 = tk.Canvas(self, width = 1024, height = 768, bg = "white")
         canvas1.create_image(1024/2,768/2,image = self.menuBackGround)
         canvas1.pack()
-
+        #creating game title on screen
         canvas1.create_text(512, 150, fill = 'grey6', font = ("fixedsys", 52, 'bold'), text = 'Welcome to the\nGame Shop',justify = 'center' )
 
-        
+        #creating start button that will open selection page
         button1 = tk.Button(canvas1, text = "START GAME", font = ("fixedsys",18), command = lambda: controller.show_frame(SelectionPage), cursor = 'hand2',borderwidth=3,foreground= "white", bg = "forest green", activebackground= "lime green", activeforeground= "white")
         button1.place(x = 512, y = 500, height = 57, width = 292, anchor = 'n')
+        #cretaing option button that will open info page
         button2 = tk.Button(canvas1, text = "INFORMATION",font = ("fixedsys",18), command = lambda: controller.show_frame(InfoPage), cursor = 'hand2',borderwidth=3, foreground= "white", bg = "DodgerBlue3", activebackground= "DodgerBlue2", activeforeground= "white")
         button2.place(x = 512, y = 575, height = 57, width = 292, anchor = 'n')
+        #creating exit button that will shut down the program
         button3 = tk.Button(canvas1, text = "EXIT GAME",font = ("fixedsys",18), command = lambda: app.destroy(), cursor = 'hand2', borderwidth= 3,foreground= "white", bg = "firebrick4", activebackground= "firebrick3", activeforeground= "white")
         button3.place(x = 512, y = 650, height = 57, width = 292, anchor = 'n')
 
 #############################################################################################################################################
 class InfoPage(tk.Frame):
-
+    """GUI class that creates all widgets in info page and manages them """
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-
+        #images that are used in this class, must be created as 'self.image' otherwise wont be shown
         self.infoBackGround = openImage('menuPage.png')
         self.backIcon = openImage('back.png')
         self.forwardIcon = openImage('for.png')
        
-
+        #setting the background
         canvas2 = tk.Canvas(self, width = 1024, height = 768, bg = "white")
         canvas2.create_image(1024/2,768/2,image = self.infoBackGround)
         canvas2.pack()
-
+        #creating the title and middle text that are permanent
         canvas2.create_text(512, 100, fill = 'grey6', font = ("fixedsys", 48, "bold"), text = "INFORMATION", justify = 'center')
         canvas2.create_text(512, 450, fill = 'grey6', font = ("fixedsys", 18), text = getText('text7.txt'),justify = 'center' )
 
-        self.pageCount = 0
+        self.pageCount = 0 #page counter to know on with part of the changeable text we are
+        #navigation buttons
         buttonBack = tk.Button(canvas2, text = "<", font = ("fixedsys",18,'bold'),state = 'disabled', command = lambda : goBack(self.pageCount), cursor = 'hand2', borderwidth = 3, foreground= "white", bg = "purple4", activebackground= "purple3", activeforeground= "white")
         buttonBack.place(x = 100,y = 430, height = 35, width = 35)
         buttonForward = tk.Button(canvas2, text = ">", font = ("fixedsys",18,'bold'), command = lambda : goForward(self.pageCount), cursor = 'hand2', borderwidth = 3, foreground= "white", bg = "purple4", activebackground= "purple3", activeforeground= "white")
         buttonForward.place(x = 890,y = 430, height = 35, width = 35)
+        #text that will be changed when navigation button pressed
         changeableText = canvas2.create_text(512, 295, fill = 'grey6', font = ("fixedsys", 18), text = getText('text1.txt'), justify = 'center')
-
+        #start game  button that shows selection page frame
         button4 = tk.Button(canvas2, text = "START GAME", font = ("fixedsys",18), command = lambda: combine_funcs(controller.show_frame(SelectionPage), resetPages()), cursor = 'hand2',borderwidth=3,foreground= "white", bg = "forest green", activebackground= "lime green", activeforeground= "white")
         button4.place(x = 512, y = 575, height = 57, width = 292, anchor = 'n')
+        #button that shows menu frame again
         button5 = tk.Button(canvas2, text = "BACK", font = ("fixedsys",18), command = lambda :combine_funcs( controller.show_frame(StartPage), resetPages()), cursor = 'hand2', borderwidth= 3,foreground= "white", bg = "dark orange", activebackground= "orange", activeforeground= "white")
         button5.place(x = 512, y = 650, height = 57, width = 292, anchor = 'n')
 
         def resetPages():###########################    BUG HERE   ################################ pages should reset when leaving info page
             self.pageCount = 0
-            txt =getText('text1.txt')
+            txt = getText('text1.txt')
             canvas2.itemconfigure(changeableText, text = txt)
             
-        def goForward(count):
-            #print(self.pageCount)
+        def goForward(count): # when forward button pressed, change changeable text data file into the further one and add +1 to the counter
+
             self.pageCount = count + 1
             if  self.pageCount== 1:
                 txt = getText('text2.txt')
@@ -179,7 +190,7 @@ class InfoPage(tk.Frame):
                 txt = getText('text6.txt')
                 canvas2.itemconfigure(changeableText, text = txt)
 
-            
+            #this part handles button state - back disabled when on the first page and forward - when on the last one
             if  self.pageCount >0:
                 buttonBack.config(state = 'normal')
             else:
@@ -191,7 +202,7 @@ class InfoPage(tk.Frame):
                 buttonForward.config(state = 'disabled')
 
             
-        def goBack(count):
+        def goBack(count):# when back button pressed, change changeable text data file into the previous one and add -1 to the counter
 
             self.pageCount = count - 1
             if self.pageCount == 0:
@@ -221,10 +232,10 @@ class InfoPage(tk.Frame):
                 buttonForward.config(state = 'disabled')
 ########################################################################################################################
 class SelectionPage(tk.Frame):
-
+    '''GUI class that creates objects in selection page and manages them'''
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-
+        # defining all images that are used by this class
         self.selectionBackGround = openImage('selectPage.png')
         self.miniShop = openImage('miniShop.png')
         self.selectno=openImage('sel0.jpg')
@@ -266,7 +277,7 @@ class SelectionPage(tk.Frame):
         self.game16L = openImage(labelDict[16])
         self.game17L = openImage(labelDict[17])
 
-        
+        #variables sucj as counters and the ones that contain widget states
         self.activatedAction = False
         self.activatedAdventure = False
         self.activatedIndie = False
@@ -277,19 +288,20 @@ class SelectionPage(tk.Frame):
         self.listCount =0
         self.checkPass = False
         
-        def setStart(pos):
+        def setStart(pos): # sets player position acoording which button for setting start on the map was pressed, updates data in Player class
             if pos == 1:
                 gamer.startPos = (1,0)
                 Player.updatePos(gamer,1, 0)
             elif pos == 2:
                 gamer.startPos = (8,25)
                 Player.updatePos(gamer,8, 25)
-            print(str(gamer.startPos))
-        
+
+        #sets background
         canvas3 = tk.Canvas(self, width = 1024, height = 768, bg = "lightBlue")
         canvas3.create_image(1024/2,768/2,image = self.selectionBackGround)
         canvas3.pack()
 
+        #category buttons
         cButton1 = tk.Button(canvas3, text = "Action", font = ("fixedsys",12), command = lambda: combine_funcs( expandGames(1),createGameButtons(1, self.activatedAction)), cursor = 'hand2', borderwidth = 3, foreground= "white", bg = "purple4", activebackground= "purple3", activeforeground= "white")
         cButton1.place(x = 450, y = 100, height = 35, width = 90)
         cButton2 = tk.Button(canvas3, text = "Adventure", font = ("fixedsys",12), command = lambda: combine_funcs( expandGames(2),createGameButtons(2, self.activatedAdventure)), cursor = 'hand2', borderwidth = 3, foreground= "white", bg = "purple4",activebackground= "purple3",activeforeground= "white")
@@ -301,22 +313,25 @@ class SelectionPage(tk.Frame):
         cButton5 = tk.Button(canvas3, text = "Sports", font = ("fixedsys",12), command = lambda: combine_funcs(expandGames(5), createGameButtons(5,self.activatedSports)), cursor = 'hand2', borderwidth = 3, foreground= "white", bg = "purple4",activebackground= "purple3",activeforeground= "white")
         cButton5.place(x = 850, y = 100, height = 35, width = 90)
 
-
+        # labels used in window
         canvas3.create_text(205, 62, fill = 'white', font = ("fixedsys", 24, "bold"), text = "YOUR SHOPPING LIST" )
         canvas3.create_text(690, 62, fill = 'white', font = ("fixedsys", 24, "bold"), text = "SELECT YOUR GAMES" )
         canvas3.create_text(700, 430, fill = 'white', font = ("fixedsys", 24, "bold"), text = "SELECT A STARTING POINT" )
         canvas3.create_image(1024/3*2+10,768/3*2+85,image = self.miniShop)
-        
+
+        #player positioning on the map buttons
         pos1Button = tk.Button(canvas3,image = self.selectno ,state = 'normal', command = lambda: combine_funcs(pos1Button.config(image = self.selectyes),pos2Button.config(image = self.selectno),confirm(), setStart(1)), cursor = 'hand2', borderwidth = 3)
         pos2Button = tk.Button(canvas3,image = self.selectno ,state = 'normal', command = lambda: combine_funcs(pos2Button.config(image = self.selectyes),pos1Button.config(image = self.selectno),confirm(), setStart(2)), cursor = 'hand2', borderwidth = 3)
         pos1Button.place(x = 510, y = 498, height = 32, width = 32)
         pos2Button.place(x = 820, y = 614, height = 32, width = 32)
 
+        #confirmation button that opens game frame and info button that opens information page
         confirmButton = tk.Button(canvas3, text = "CONFIRM", font = ("fixedsys",18), command = lambda: controller.show_frame(GamePage), state = 'disabled', cursor = 'hand2',borderwidth=3,foreground= "white", bg = "forest green", activebackground= "lime green", activeforeground= "white")
         confirmButton.place(x = 250, y = 665, height = 57, width = 230, anchor = 'n')
         infoButton = tk.Button(canvas3,image = self.menu, command = lambda: controller.show_frame(InfoPage), cursor = 'hand2',borderwidth=3)
         infoButton.place(x = 80, y = 665, height = 57, width = 60, anchor = 'n')
-        
+
+        #creating all avaible game buttons
         self.gameAc1 = tk.Button(canvas3, image = self.game1 ,command = lambda:  combine_funcs(intolist(1),displayList()), cursor = 'hand2', borderwidth = 3)
         self.gameAc2 = tk.Button(canvas3, image = self.game2 ,command = lambda: combine_funcs(intolist(2),displayList()), cursor = 'hand2', borderwidth = 3)
         self.gameAc3 = tk.Button(canvas3, image = self.game3 ,command = lambda:combine_funcs(intolist(3),displayList()), cursor = 'hand2', borderwidth = 3)
@@ -339,7 +354,7 @@ class SelectionPage(tk.Frame):
         self.gameS2 = tk.Button(canvas3, image = self.game16,command = lambda: combine_funcs(intolist(16),displayList()), cursor = 'hand2', borderwidth = 3)
         self.gameS3 = tk.Button(canvas3, image = self.game17,command = lambda: combine_funcs(intolist(17),displayList()), cursor = 'hand2', borderwidth = 3)
         
-        def createGameButtons(cat, state):
+        def createGameButtons(cat, state): # when button were created and destroyed, creates them again
             
             if cat == 1 and state == False:
                 self.gameAc1 = tk.Button(canvas3, image = self.game1 ,command = lambda: intolist(1), cursor = 'hand2', borderwidth = 3)
@@ -372,7 +387,7 @@ class SelectionPage(tk.Frame):
                 self.gameS3 = tk.Button(canvas3, image = self.game17,command = lambda: intolist(17), cursor = 'hand2', borderwidth = 3)
             
 
-        def expandGames(category):
+        def expandGames(category): # if the category button is pressed once places game buttons on screen, when category button is pressed again, game buttons are destroyed
 
             if category == 1:
                 
@@ -511,7 +526,7 @@ class SelectionPage(tk.Frame):
 #############################################################################################################
 
 class node:
-    """Class used to store an X and Y cordanat"""
+    """Class used to store an x and y coordanates of each  node in the map for a* algorithm"""
     def __init__(self, x, y):
         self.x = x
         self.y = y
@@ -1081,7 +1096,7 @@ class GamePage(tk.Frame):
                 walk(path)
                 self.collectedGames.append(toFind)
                 
-                inventoryLabel['text'] = self.collectedGames
+                #inventoryLabel['text'] = self.collectedGames
                 collectedStatus['text'] = 'Games collected: ' + str(len(self.collectedGames)) + ' / '+ str(len(self.gamesToBuy))
                 budgetStatus['text'] = 'Budget: '+ str(self.budget)
             canvas4.create_text(500, 380, text = 'GAME OVER', font = ('fixedsys',52), fill = 'red', justify= 'center')
@@ -1141,6 +1156,3 @@ iGame17 = Game(17,'Need for Speed','Sports', 5, 4, 'game17.gif','lbl17.png')
 app = GameShop()
 app.mainloop()
 
-
-
-        
