@@ -755,10 +755,8 @@ class GamePage(tk.Frame):
         
         selectSorting1 = tk.Radiobutton(canvas4,variable = var, value = 1,selectcolor = 'grey8', text="Shell sort", font = ("fixedsys",12), bg = 'grey10', command = lambda: setTypeA(1), fg = 'white', cursor = 'hand2')
         selectSorting1.place (x = 700, y = 610)
-        selectSorting2 = tk.Radiobutton(canvas4,variable = var, value = 2, selectcolor = 'grey8', text="Quick sort", font = ("fixedsys",12), bg = 'grey10', command = lambda: setTypeA(2), fg = 'white',cursor = 'hand2')
+        selectSorting2 = tk.Radiobutton(canvas4,variable = var,value = 2, selectcolor= 'grey8', text="Merge sort", font = ("fixedsys",12), bg = 'grey10', command = lambda: setTypeA(2), fg = 'white', cursor = 'hand2')
         selectSorting2.place (x = 700, y = 640)
-        selectSorting3 = tk.Radiobutton(canvas4,variable = var,value = 3, selectcolor= 'grey8', text="Merge sort", font = ("fixedsys",12), bg = 'grey10', command = lambda: setTypeA(3), fg = 'white', cursor = 'hand2')
-        selectSorting3.place (x = 700, y = 670)
         selectSorting4 = tk.Radiobutton(canvas4,variable = var2, value = 1,selectcolor = 'grey8', text="Name sort", font = ("fixedsys",12), bg = 'grey10', command = lambda: setTypeBy(1), fg = 'white', cursor = 'hand2')
         selectSorting4.place (x = 850, y = 610)
         selectSorting5 = tk.Radiobutton(canvas4,variable = var2, value = 2, selectcolor = 'grey8', text="Price sort", font = ("fixedsys",12), bg = 'grey10', command = lambda: setTypeBy(2), fg = 'white',cursor = 'hand2')
@@ -897,54 +895,6 @@ class GamePage(tk.Frame):
                     inc = inc//2 if inc//2 else (0 if inc==1 else 1)
 
 
-        def quickSort(increasing, alist, name):#add here
-           quickSortHelper(alist,0,len(alist)-1, name)#add here
-
-        def quickSortHelper(alist,first,last, name):#add here
-           if first<last:
-
-               splitpoint = partition(alist,first,last, name)#add here
-
-               quickSortHelper(alist,first,splitpoint-1, name)#add here
-               quickSortHelper(alist,splitpoint+1,last, name)#add here
-
-
-        def partition(alist,first,last,name):#add here
-           pivotvalue = alist[first]
-
-           leftmark = first+1
-           rightmark = last
-
-           done = False
-           while not done:
-
-               while leftmark <= rightmark and alist[leftmark] <= pivotvalue:
-                   leftmark = leftmark + 1
-
-               while alist[rightmark] >= pivotvalue and rightmark >= leftmark:
-                   rightmark = rightmark -1
-
-               if rightmark < leftmark:
-                   done = True
-               else:
-                   temp = alist[leftmark]
-                   alist[leftmark] = alist[rightmark]
-                   alist[rightmark] = temp
-                   temp2 = name[leftmark]
-                   name[leftmark] = name[rightmark]
-                   name[rightmark] = temp2
-                   #add here
-
-           temp = alist[first]
-           alist[first] = alist[rightmark]
-           alist[rightmark] = temp
-           temp2 = name[first]
-           name[first] = name[rightmark]
-           name[rightmark] = temp2
-           #add here
-
-
-           return rightmark
 
 
         def mergeSort(increasing,name,price):#add here
@@ -958,8 +908,8 @@ class GamePage(tk.Frame):
                     righthalf2 = name[mid:]
                     #add here
 
-                    mergeSort(lefthalf,lefthalf2)#add here
-                    mergeSort(righthalf,righthalf2)#add here
+                    mergeSort(increasing,lefthalf,lefthalf2)#add here
+                    mergeSort(increasing,righthalf,righthalf2)#add here
 
                     i=0
                     j=0
@@ -1001,8 +951,8 @@ class GamePage(tk.Frame):
                         righthalf2 = name[mid:]
                         #add here
 
-                        mergeSort(lefthalf,lefthalf2)#add here
-                        mergeSort(righthalf,righthalf2)#add here
+                        mergeSort(increasing,lefthalf,lefthalf2)#add here
+                        mergeSort(increasing,righthalf,righthalf2)#add here
 
                         i=0
                         j=0
@@ -1038,7 +988,7 @@ class GamePage(tk.Frame):
         def setTypeIn(x): #sorting by : increasing / decreasing order
             self.sortIn = x
         
-        def setTypeA(x): #sorting using shell / quick / merge algorithm
+        def setTypeA(x): #sorting using shell / merge algorithm
             self.sortA = x
 
         def setTypeBy(x):# sorting by : name / price / rating         
@@ -1046,88 +996,76 @@ class GamePage(tk.Frame):
 
         def sortCollectedGames(alist,nameList, priceList, ratingList):
             localList = []
-            try:
-                if self.sortBy ==  1:#name
-                    if self.sortIn == 1:#increasing
-                        if self.sortA == 1:#shellsort
-                            shellSort(True,alist, nameList)
-                            localList = alist
-                        elif self.sortA == 2:#quicksort
-                            pass
-                        elif self.sortA == 3:#mergesort
-                            mergeSort(True,alist,nameList)
-                            localList = alist
+            
+            if self.sortBy ==  1:#name
+                if self.sortIn == 1:#increasing
+                    if self.sortA == 1:#shellsort
+                        shellSort(True,alist, nameList)
+                        localList = alist
+                    
+                    elif self.sortA == 2:#mergesort
+                        mergeSort(True,alist,nameList)
+                        localList = alist
 
-                    elif self.sortIn ==2:#decreaing
-                        if self.sortA == 1:#shellsort
-                            shellSort(False,alist, nameList)
-                            localList = alist
-                        elif self.sortA == 2:#quicksort
-                            pass
-                        elif self.sortA == 3:#mergesort
-                            mergeSort(False,alist,nameList)
-                            localList = alist
+                elif self.sortIn ==2:#decreaing
+                    if self.sortA == 1:#shellsort
+                        shellSort(False,alist, nameList)
+                        localList = alist
+                   
+                    elif self.sortA == 2:#mergesort
+                        mergeSort(False,alist,nameList)
+                        localList = alist
 
                 
-                elif self.sortBy == 2:#price
-                    if self.sortIn == 1:#increasing
-                        if self.sortA == 1:#shellsort
-                            shellSort(True,alist, priceList)
-                            localList = alist
-                        elif self.sortA == 2:#quicksort
-                            pass
-                        elif self.sortA == 3:#mergesort
-                            mergeSort(True,alist,priceList)
-                            localList = alist
+            elif self.sortBy == 2:#price
+                if self.sortIn == 1:#increasing
+                    if self.sortA == 1:#shellsort
+                        shellSort(True,alist, priceList)
+                        localList = alist
+                   
+                    elif self.sortA == 2:#mergesort
+                        mergeSort(True,alist,priceList)
+                        localList = alist
 
-                    elif self.sortIn ==2:#decreaing
-                        if self.sortA == 1:#shellsort
-                            shellSort(False,alist, priceList)
-                            localList = alist
-                        elif self.sortA == 2:#quicksort
-                            pass
-                        elif self.sortA == 3:#mergesort
-                            mergeSort(False,alist,priceList)
-                            localList = alist
+                elif self.sortIn ==2:#decreaing
+                    if self.sortA == 1:#shellsort
+                        shellSort(False,alist, priceList)
+                        localList = alist
+                    
+                    elif self.sortA == 2:#mergesort
+                        mergeSort(False,alist,priceList)
+                        localList = alist
 
                 
-                elif self.sortBy == 3:
-                    if self.sortIn == 1:#increasing
-                        if self.sortA == 1:#shellsort
-                            shellSort(True,alist, ratingList)
-                            localList = alist
-                        elif self.sortA == 2:#quicksort
-                            pass
-                        elif self.sortA == 3:#mergesort
-                            mergeSort(True,alist,ratingList)
-                            localList = alist
+            elif self.sortBy == 3:
+                if self.sortIn == 1:#increasing
+                    if self.sortA == 1:#shellsort
+                        shellSort(True,alist, ratingList)
+                        localList = alist
+                   
+                    elif self.sortA == 2:#mergesort
+                        mergeSort(True,alist,ratingList)
+                        localList = alist
 
-                    elif self.sortIn ==2:#decreaing
-                        if self.sortA == 1:#shellsort
-                            shellSort(False,alist, ratingList)
-                            localList = alist
-                        elif self.sortA == 2:#quicksort
-                            pass
-                        elif self.sortA == 3:#mergesort
-                            mergeSort(False,alist,ratingList)
-                            localList = alist
-            except:
-                raise ValueError()
-                
-            #print(localList)
+                elif self.sortIn ==2:#decreaing
+                    if self.sortA == 1:#shellsort
+                        shellSort(False,alist, ratingList)
+                        localList = alist
+                   
+                    elif self.sortA == 2:#mergesort
+                        mergeSort(False,alist,ratingList)
+                        localList = alist
+            
             localx = 150
             localy = 500
 
             for i in localList:
                 print(i)
                 img = pictureDict[i]
-                #label = tk.Label(canvas4, image = img)
-                #label.place(x = localx, y = localy)
                 canvas4.create_image(localx,localy, image = img)
                 localx += 120
                 canvas4.update()
-          
-
+        
             
 
          
@@ -1139,14 +1077,6 @@ class GamePage(tk.Frame):
             print(str(s))
             sec = m*60+s
 
-        def showInventory(self):
-            if self.collectedGames != []:
-                sortGames(self.collectedGames)
-                for i in self.collectedGames:
-                    pass
-
-                ###################################
-        
         def showTime():
             global sec
             if sec >0 :
@@ -1176,7 +1106,7 @@ class GamePage(tk.Frame):
             priceList = []
             ratingList = []
             lenght = len(self.gamesToBuy)
-            if self.budget >=0:
+            if self.budget >0:
                 for i in range(lenght):
                     if gamer.startPos == (1,0):
                         toFind = min(self.coordDict, key = self.coordDict.get)
@@ -1203,7 +1133,6 @@ class GamePage(tk.Frame):
                         continue
 
                     sortCollectedGames(self.collectedGames, nameList, priceList, ratingList)
-                    #inventoryLabel['text'] = self.collectedGames
                     collectedStatus['text'] = 'Collected: ' + str(len(self.collectedGames)) + ' / '+ str(len(self.gamesToBuy))
                     budgetStatus['text'] = 'Budget: '+ str(self.budget)
                     ratingStatus['text'] = 'Avg Rating: '+ str(round(int(self.rating)/len(self.collectedGames),2))
@@ -1215,7 +1144,7 @@ class GamePage(tk.Frame):
                 canvas4.create_text(500, 380, text = 'CONGRATULATIONS!', font = ('fixedsys',52), fill = 'gold', justify= 'center')
                 startButton.destroy()
                 
-            resultButton = tk.Button(canvas4, text = "RESULTS", font = ("fixedsys",18), command = lambda: controller.show_frame(StartPage), cursor = 'hand2',borderwidth=3,foreground= "white", bg = "orange", activebackground= "gold", activeforeground= "white")
+            resultButton = tk.Button(canvas4, text = "EXIT GAME",font = ("fixedsys",18), command = lambda: app.destroy(), cursor = 'hand2', borderwidth= 3,foreground= "white", bg = "firebrick4", activebackground= "firebrick3", activeforeground= "white")
             resultButton.place(x = 512, y = 694, height = 57, width = 292, anchor = 'n')
                 
 
@@ -1228,8 +1157,6 @@ class GamePage(tk.Frame):
         budgetStatus.place(x =50,y= 650)
         ratingStatus = tk.Label(canvas4, text = ('Avg Rating: '+ str(0)),font = ("fixedsys",24),activebackground='grey10', activeforeground='white',background= 'grey10',foreground= 'white')
         ratingStatus.place(x =50,y= 690)
-        #inventoryLabel = tk.Label(canvas4, font = ("fixedsys",24),activebackground='grey10', activeforeground='white',background= 'grey10',foreground= 'white',justify= 'center')
-        #inventoryLabel.place(x = 200, y =700)
         timeLabel = tk.Label(canvas4, font = ("fixedsys",48),activebackground='grey10', activeforeground='white',background= 'grey10', foreground= 'white',justify= 'center')
         timeLabel.place(x = 545, y = 610)
 #############################################################################################################################################################################
@@ -1246,10 +1173,21 @@ class Player():
         self.ypos = ynew
 
 
+##########################################################################################################################################
+
+class ResulPage():
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+
+        canvas4 = tk.Canvas(self, width = 1024, height = 768, bg = "white")
+        canvas4.create_image(1024/2,768/2,image = self.gameBackground)
+        canvas4.pack()
+
+
 
 ##############################################################################################################################################
 
-gamer = Player('player.png')
+gamer = Player('player.jpg')
 iGame1 = Game(1, 'BattleField', 'Action', 23, 5,'game1.gif', 'lbl1.png', 133, 192)
 iGame2 = Game(2,'GTA 5', 'Action', 40, 5, 'game2.png','lbl2.png',261,256)
 iGame3 = Game(3,'XCOM2', 'Action', 20, 4, 'game3.png','lbl3.png', 421,64)
