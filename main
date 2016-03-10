@@ -1173,17 +1173,6 @@ class Player():
         self.ypos = ynew
 
 
-##########################################################################################################################################
-
-class ResulPage():
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-
-        canvas4 = tk.Canvas(self, width = 1024, height = 768, bg = "white")
-        canvas4.create_image(1024/2,768/2,image = self.gameBackground)
-        canvas4.pack()
-
-
 
 ##############################################################################################################################################
 
