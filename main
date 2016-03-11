@@ -4,6 +4,7 @@ from PIL import Image, ImageTk
 import winsound
 from time import *
 from random import randint
+from threading import Thread
 
 ############################# Global functions
 
@@ -13,7 +14,7 @@ def openImage(filename): # opens all type of images for further use
     return tkImage
 
 def sound():    
-    winsound.PlaySound("SystemExit", winsound.SND_ALIAS)
+    winsound.PlaySound("button.wav", winsound.SND_ALIAS)
 
 def getText(textFile): # opens text file, reads info from it and then closes it
         try:
@@ -31,14 +32,7 @@ def combine_funcs(*funcs): # combines multiple functions given for further use w
     return combined_func
 
 def binarySearch(selectedGameList, gameID):  #binary search that takes a list and an object and returns true if that object is in the list, and otherwise - false
-            if len(selectedGameList) != 0:
-
-
-
-
-
-
-                
+            if len(selectedGameList) != 0:   
                 mid = len(selectedGameList)//2
                 if selectedGameList[mid]==gameID:
                     return True
@@ -99,7 +93,7 @@ class GameShop(tk.Tk):
         #container.grid_columnconfigure(0, weight = 1)
 
         self.frames = {} #all game frames
-        for F in (StartPage, InfoPage, SelectionPage, GamePage): #if new frame is created add it here
+        for F in (StartPage, InfoPage, SelectionPage, GamePage, ResultPage): #if new frame is created add it here
             
             frame = F(container, self)
             
@@ -110,9 +104,10 @@ class GameShop(tk.Tk):
         self.show_frame(StartPage)
 
     def show_frame(self, cont):
-
+        
         frame = self.frames[cont]
         frame.tkraise()
+
 
 ##############################################################################################################################################
 class StartPage(tk.Frame):
@@ -126,18 +121,17 @@ class StartPage(tk.Frame):
         canvas1 = tk.Canvas(self, width = 1024, height = 768, bg = "white")
         canvas1.create_image(1024/2,768/2,image = self.menuBackGround)
         canvas1.pack()
-
         #creating game title on screen
         canvas1.create_text(512, 150, fill = 'grey6', font = ("fixedsys", 52, 'bold'), text = 'Welcome to the\nGame Shop',justify = 'center' )
 
         #creating start button that will open selection page
-        button1 = tk.Button(canvas1, text = "START GAME", font = ("fixedsys",18), command = lambda: controller.show_frame(SelectionPage), cursor = 'hand2',borderwidth=3,foreground= "white", bg = "forest green", activebackground= "lime green", activeforeground= "white")
+        button1 = tk.Button(canvas1, text = "START GAME", font = ("fixedsys",18), command = lambda: combine_funcs(controller.show_frame(SelectionPage),sound()), cursor = 'hand2',borderwidth=3,foreground= "white", bg = "forest green", activebackground= "lime green", activeforeground= "white")
         button1.place(x = 512, y = 500, height = 57, width = 292, anchor = 'n')
         #cretaing option button that will open info page
-        button2 = tk.Button(canvas1, text = "INFORMATION",font = ("fixedsys",18), command = lambda: controller.show_frame(InfoPage), cursor = 'hand2',borderwidth=3, foreground= "white", bg = "DodgerBlue3", activebackground= "DodgerBlue2", activeforeground= "white")
+        button2 = tk.Button(canvas1, text = "INFORMATION",font = ("fixedsys",18), command = lambda:combine_funcs( controller.show_frame(InfoPage),sound()), cursor = 'hand2',borderwidth=3, foreground= "white", bg = "DodgerBlue3", activebackground= "DodgerBlue2", activeforeground= "white")
         button2.place(x = 512, y = 575, height = 57, width = 292, anchor = 'n')
         #creating exit button that will shut down the program
-        button3 = tk.Button(canvas1, text = "EXIT GAME",font = ("fixedsys",18), command = lambda: app.destroy(), cursor = 'hand2', borderwidth= 3,foreground= "white", bg = "firebrick4", activebackground= "firebrick3", activeforeground= "white")
+        button3 = tk.Button(canvas1, text = "EXIT GAME",font = ("fixedsys",18), command = lambda: combine_funcs(sound(), app.destroy()), cursor = 'hand2', borderwidth= 3,foreground= "white", bg = "firebrick4", activebackground= "firebrick3", activeforeground= "white")
         button3.place(x = 512, y = 650, height = 57, width = 292, anchor = 'n')
         
 
@@ -167,10 +161,10 @@ class InfoPage(tk.Frame):
         #text that will be changed when navigation button pressed
         changeableText = canvas2.create_text(512, 295, fill = 'grey6', font = ("fixedsys", 18), text = getText('text1.txt'), justify = 'center')
         #start game  button that shows selection page frame
-        button4 = tk.Button(canvas2, text = "START GAME", font = ("fixedsys",18), command = lambda: combine_funcs(controller.show_frame(SelectionPage), resetPages()), cursor = 'hand2',borderwidth=3,foreground= "white", bg = "forest green", activebackground= "lime green", activeforeground= "white")
+        button4 = tk.Button(canvas2, text = "START GAME", font = ("fixedsys",18), command = lambda: combine_funcs(controller.show_frame(SelectionPage),sound(), resetPages()), cursor = 'hand2',borderwidth=3,foreground= "white", bg = "forest green", activebackground= "lime green", activeforeground= "white")
         button4.place(x = 512, y = 575, height = 57, width = 292, anchor = 'n')
         #button that shows menu frame again
-        button5 = tk.Button(canvas2, text = "BACK", font = ("fixedsys",18), command = lambda :combine_funcs( controller.show_frame(StartPage), resetPages()), cursor = 'hand2', borderwidth= 3,foreground= "white", bg = "dark orange", activebackground= "orange", activeforeground= "white")
+        button5 = tk.Button(canvas2, text = "BACK", font = ("fixedsys",18), command = lambda :combine_funcs( controller.show_frame(StartPage),sound(), resetPages()), cursor = 'hand2', borderwidth= 3,foreground= "white", bg = "dark orange", activebackground= "orange", activeforeground= "white")
         button5.place(x = 512, y = 650, height = 57, width = 292, anchor = 'n')
 
         def resetPages():###########################    BUG HERE   ################################ pages should reset when leaving info page
@@ -333,9 +327,9 @@ class SelectionPage(tk.Frame):
         pos2Button.place(x = 820, y = 614, height = 32, width = 32)
 
         #confirmation button that opens game frame and info button that opens information page
-        confirmButton = tk.Button(canvas3, text = "CONFIRM", font = ("fixedsys",18), command = lambda: controller.show_frame(GamePage), state = 'disabled', cursor = 'hand2',borderwidth=3,foreground= "white", bg = "forest green", activebackground= "lime green", activeforeground= "white")
+        confirmButton = tk.Button(canvas3, text = "CONFIRM", font = ("fixedsys",18), command = lambda: combine_funcs(sound(),controller.show_frame(GamePage)), state = 'disabled', cursor = 'hand2',borderwidth=3,foreground= "white", bg = "forest green", activebackground= "lime green", activeforeground= "white")
         confirmButton.place(x = 250, y = 665, height = 57, width = 230, anchor = 'n')
-        infoButton = tk.Button(canvas3,image = self.menu, command = lambda: controller.show_frame(InfoPage), cursor = 'hand2',borderwidth=3)
+        infoButton = tk.Button(canvas3,image = self.menu, command = lambda:combine_funcs(sound(), controller.show_frame(InfoPage)), cursor = 'hand2',borderwidth=3)
         infoButton.place(x = 80, y = 665, height = 57, width = 60, anchor = 'n')
 
         #creating all avaible game buttons
@@ -700,7 +694,7 @@ class GamePage(tk.Frame):
         tk.Frame.__init__(self, parent)
 
         self.gameBackground = openImage('shop1.png')
-        self.playerIcon = openImage('gamer.png')
+        self.playerIcon = openImage('gamer.jpg')
         var = tk.IntVar()
         var2 = tk.IntVar()
         self.dec = int()
@@ -747,7 +741,7 @@ class GamePage(tk.Frame):
         canvas4.create_image(1024/2,768/2,image = self.gameBackground)
         canvas4.pack()
         
-        startButton = tk.Button(canvas4, text = "START", font = ("fixedsys",18),state = 'disabled', command = lambda: combine_funcs(setTime(), self.minutes.destroy(), self.seconds.destroy(),placeGamesToCollect(), showTime(), movePlayer(),startButton.destroy()), cursor = 'hand2',borderwidth=3,foreground= "white", bg = "forest green", activebackground= "lime green", activeforeground= "white")
+        startButton = tk.Button(canvas4, text = "START", font = ("fixedsys",18),state = 'disabled', command = lambda: combine_funcs(setTime(),sound(), self.minutes.destroy(), self.seconds.destroy(),placeGamesToCollect(), showTime(), movePlayer(),startButton.destroy()), cursor = 'hand2',borderwidth=3,foreground= "white", bg = "forest green", activebackground= "lime green", activeforeground= "white")
         startButton.place(x = 512, y = 694, height = 57, width = 292, anchor = 'n')
         
         timeLabel = tk.Label(canvas4, font = ("fixedsys",48),activebackground='grey10', activeforeground='white',background= 'grey10', foreground= 'white',justify= 'center')
@@ -895,94 +889,39 @@ class GamePage(tk.Frame):
                     inc = inc//2 if inc//2 else (0 if inc==1 else 1)
 
 
+        def  _ItComparator(x ,y):return x>y
+
+        def  _ItComparatorDec(x ,y):return x<y
 
 
-        def mergeSort(increasing,name,price):#add here
+        def mergeSort(increasing,price,name, comparator):#add here
+            if len(price)>1:
+                mid = int(len(price)//2)
+                lefthalf = price[:mid]
+                righthalf = price[mid:]
+                lefthalf2 = name[:mid]
+                righthalf2 = name[mid:]
+                #add here
 
-            if increasing == True:
-                if len(price)>1:
-                    mid = len(price)//2
-                    lefthalf = price[:mid]
-                    righthalf = price[mid:]
-                    lefthalf2 = name[:mid]
-                    righthalf2 = name[mid:]
-                    #add here
+                mergeSort(increasing,lefthalf,lefthalf2, comparator)#add here
+                mergeSort(increasing,righthalf,righthalf2, comparator)#add here
 
-                    mergeSort(increasing,lefthalf,lefthalf2)#add here
-                    mergeSort(increasing,righthalf,righthalf2)#add here
-
-                    i=0
-                    j=0
-                    k=0
-                    while i < len(lefthalf) and j < len(righthalf):
-                        if lefthalf[i] < righthalf[j]:
-                            price[k]=lefthalf[i]
-                            name[k]=lefthalf2[i]
-                            #add here
-                            i=i+1
-                        else:
-                            price[k]=righthalf[j]
-                            name[k]=righthalf2[j]
-                            #add here
-                            j=j+1
-                        k=k+1
-
-                    while i < len(lefthalf):
-                        price[k]=lefthalf[i]
-                        name[k]=lefthalf2[i]
-                        #add here
-                        i=i+1
-                        k=k+1
-
-                    while j < len(righthalf):
-                        price[k]=righthalf[j]
-                        name[k]=righthalf2[j]
-                        #add here
-                        j=j+1
-                        k=k+1
-
-                else:
-
-                    if len(price)>1:
-                        mid = len(price)//2
-                        lefthalf = price[:mid]
-                        righthalf = price[mid:]
-                        lefthalf2 = name[:mid]
-                        righthalf2 = name[mid:]
-                        #add here
-
-                        mergeSort(increasing,lefthalf,lefthalf2)#add here
-                        mergeSort(increasing,righthalf,righthalf2)#add here
-
-                        i=0
-                        j=0
-                        k=0
-                        while i < len(lefthalf) and j < len(righthalf):
-                            if lefthalf[i] > righthalf[j]:
-                                price[k]=lefthalf[i]
-                                name[k]=lefthalf2[i]
-                                #add here
-                                i=i+1
-                            else:
-                                price[k]=righthalf[j]
-                                name[k]=righthalf2[j]
-                                #add here
-                                j=j+1
-                            k=k+1
-
-                        while i < len(lefthalf):
-                            price[k]=lefthalf[i]
-                            name[k]=lefthalf2[i]
-                            #add here
-                            i=i+1
-                            k=k+1
-
-                        while j < len(righthalf):
-                            price[k]=righthalf[j]
-                            name[k]=righthalf2[j]
-                            #add here
-                            j=j+1
-                            k=k+1
+                i=0
+                lefthalfi=0
+                righthalfi=0
+                lefthalf2i=0
+                righthalf2i=0
+                while True:
+                    if lefthalfi>=len(lefthalf):price[i:]=  righthalf[righthalfi:]; break
+                    if righthalfi >= len(righthalf):price[i:]= lefthalf[lefthalfi:]; break
+                    if comparator(lefthalf[lefthalfi],righthalf[righthalfi]):
+                        price[i]=lefthalf[lefthalfi]
+                        lefthalfi += 1
+                    else:
+                        price[i]=righthalf[righthalfi]
+                        righthalfi+=1
+                    i+=1
+                
 
             
         def setTypeIn(x): #sorting by : increasing / decreasing order
@@ -1004,7 +943,7 @@ class GamePage(tk.Frame):
                         localList = alist
                     
                     elif self.sortA == 2:#mergesort
-                        mergeSort(True,alist,nameList)
+                        mergeSort(True,alist,nameList,comparator = _ItComparator)
                         localList = alist
 
                 elif self.sortIn ==2:#decreaing
@@ -1013,7 +952,7 @@ class GamePage(tk.Frame):
                         localList = alist
                    
                     elif self.sortA == 2:#mergesort
-                        mergeSort(False,alist,nameList)
+                        mergeSort(False,alist,nameList,comparator = _ItComparatorDec)
                         localList = alist
 
                 
@@ -1024,7 +963,7 @@ class GamePage(tk.Frame):
                         localList = alist
                    
                     elif self.sortA == 2:#mergesort
-                        mergeSort(True,alist,priceList)
+                        mergeSort(True,alist,priceList,comparator = _ItComparator)
                         localList = alist
 
                 elif self.sortIn ==2:#decreaing
@@ -1033,7 +972,7 @@ class GamePage(tk.Frame):
                         localList = alist
                     
                     elif self.sortA == 2:#mergesort
-                        mergeSort(False,alist,priceList)
+                        mergeSort(False,alist,priceList,comparator = _ItComparatorDec)
                         localList = alist
 
                 
@@ -1044,7 +983,7 @@ class GamePage(tk.Frame):
                         localList = alist
                    
                     elif self.sortA == 2:#mergesort
-                        mergeSort(True,alist,ratingList)
+                        mergeSort(True,alist,ratingList,comparator = _ItComparator)
                         localList = alist
 
                 elif self.sortIn ==2:#decreaing
@@ -1053,7 +992,7 @@ class GamePage(tk.Frame):
                         localList = alist
                    
                     elif self.sortA == 2:#mergesort
-                        mergeSort(False,alist,ratingList)
+                        mergeSort(False,alist,ratingList,comparator = _ItComparatorDec)
                         localList = alist
             
             localx = 150
@@ -1083,7 +1022,6 @@ class GamePage(tk.Frame):
                 sec-=1
                 timeLabel['text'] = sec
             else:
-                #controller.show_frame(StartPage)
                 sec = 1
             
             canvas4.create_text(505,665,text = "Time Left:       s" ,font = ("fixedsys",24),fill = 'white',justify= 'center')
@@ -1105,6 +1043,7 @@ class GamePage(tk.Frame):
             nameList = []
             priceList = []
             ratingList = []
+            self.rating = 0
             lenght = len(self.gamesToBuy)
             if self.budget >0:
                 for i in range(lenght):
@@ -1121,8 +1060,8 @@ class GamePage(tk.Frame):
                     walk(path)
                     item = itemDict[toFind]
                     self.budget = self.budget - item.price
-                    self.rating += item.rating
                     if self.budget >=0:
+                        self.rating += item.rating
                         nameList.append(item.name)
                         priceList.append(item.price)
                         ratingList.append(item.rating)
@@ -1132,6 +1071,7 @@ class GamePage(tk.Frame):
                         self.budget += item.price
                         continue
 
+                    #timeLeft = sec
                     sortCollectedGames(self.collectedGames, nameList, priceList, ratingList)
                     collectedStatus['text'] = 'Collected: ' + str(len(self.collectedGames)) + ' / '+ str(len(self.gamesToBuy))
                     budgetStatus['text'] = 'Budget: '+ str(self.budget)
@@ -1144,9 +1084,9 @@ class GamePage(tk.Frame):
                 canvas4.create_text(500, 380, text = 'CONGRATULATIONS!', font = ('fixedsys',52), fill = 'gold', justify= 'center')
                 startButton.destroy()
                 
-            resultButton = tk.Button(canvas4, text = "EXIT GAME",font = ("fixedsys",18), command = lambda: app.destroy(), cursor = 'hand2', borderwidth= 3,foreground= "white", bg = "firebrick4", activebackground= "firebrick3", activeforeground= "white")
+            resultButton = tk.Button(canvas4, text = "EXIT GAME",font = ("fixedsys",18), command = lambda: combine_funcs(sound(),app.destroy() ), cursor = 'hand2', borderwidth= 3,foreground= "white", bg = "firebrick4", activebackground= "firebrick3", activeforeground= "white")
             resultButton.place(x = 512, y = 694, height = 57, width = 292, anchor = 'n')
-                
+
 
 
             
@@ -1173,10 +1113,12 @@ class Player():
         self.ypos = ynew
 
 
+        
+
 
 ##############################################################################################################################################
 
-gamer = Player('player.jpg')
+gamer = Player('gamer.jpg')
 iGame1 = Game(1, 'BattleField', 'Action', 23, 5,'game1.gif', 'lbl1.png', 133, 192)
 iGame2 = Game(2,'GTA 5', 'Action', 40, 5, 'game2.png','lbl2.png',261,256)
 iGame3 = Game(3,'XCOM2', 'Action', 20, 4, 'game3.png','lbl3.png', 421,64)
