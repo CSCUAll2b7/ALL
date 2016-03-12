@@ -89,11 +89,9 @@ class GameShop(tk.Tk):
         self.title("Game Shop")
         
         container.pack(side = "top", fill = "both", expand = True)
-        #container.grid_rowconfigure(0, weight = 1)
-        #container.grid_columnconfigure(0, weight = 1)
 
         self.frames = {} #all game frames
-        for F in (StartPage, InfoPage, SelectionPage, GamePage, ResultPage): #if new frame is created add it here
+        for F in (StartPage, InfoPage, SelectionPage, GamePage): #if new frame is created add it here
             
             frame = F(container, self)
             
@@ -167,7 +165,7 @@ class InfoPage(tk.Frame):
         button5 = tk.Button(canvas2, text = "BACK", font = ("fixedsys",18), command = lambda :combine_funcs( controller.show_frame(StartPage),sound(), resetPages()), cursor = 'hand2', borderwidth= 3,foreground= "white", bg = "dark orange", activebackground= "orange", activeforeground= "white")
         button5.place(x = 512, y = 650, height = 57, width = 292, anchor = 'n')
 
-        def resetPages():###########################    BUG HERE   ################################ pages should reset when leaving info page
+        def resetPages(): # pages should reset when leaving info page
             self.pageCount = 0
             txt = getText('text1.txt')
             canvas2.itemconfigure(changeableText, text = txt)
@@ -287,7 +285,6 @@ class SelectionPage(tk.Frame):
         self.posCount = 0
         self.entrypos = 0
         self.listCount =0
-        self.checkPass = False
         
         def setStart(pos): # sets player position acoording which button for setting start on the map was pressed, updates data in Player class
             if pos == 1:
@@ -526,7 +523,7 @@ class SelectionPage(tk.Frame):
                 confirmButton.config(state = 'normal')
 #############################################################################################################
 
-class node:
+class Node:
     """Class used to store an x and y coordanates of each  node in the map for a* algorithm"""
     def __init__(self, x, y):
         self.x = x
@@ -540,15 +537,17 @@ class node:
         return hash((self.x, self.y))
 
 class PathFind:
-    """As a constructior it takes a 2D array with 0's where the robot can go and 1's where it cant"""
-    def __init__(self,matrix, boundsx, boundsy):
+    """ class that finds a path between two points on the map (graph), must specify bounds of the map, map should be in 0 and 1's"""
+    
+    def __init__(self, array, boundsx, boundsy):
         self.boundsx = boundsx
         self.boundsy = boundsy
-        self.array = matrix
-    """Returns a list (reverse order) or the nodes to go to in orger to get to the obective, or false if its imposible. Takes 2 nodes, starting position and end position. """
+        self.array = array
+   
     def AStar(self, start, goal):
+    	# takes start and goal positions of the object and creates most optimal path between them, uses lists to store child nodes 
 
-        matrix = self.array
+        array = self.array
         closedSet = []
         
         openSet = [start]
@@ -564,28 +563,28 @@ class PathFind:
         
         while openSet != [] :
             
-            current = self.lowestValueInDict(openSet, fScore)
+            current = self.lowestValue(openSet, fScore)
             if current.x == goal.x and current.y == goal.y:
-                return self.reconstruct_path(cameFrom, goal)
+                return self.reconstructPath(cameFrom, goal)
             
             openSet.remove(current)
             closedSet.append(current)
 
             neighbors = []
             if current.x > 0:
-                if matrix[current.x -1][current.y] == 0:
-                    neighbors.append(node(current.x -1, current.y))
+                if array[current.x -1][current.y] == 0:
+                    neighbors.append(Node(current.x -1, current.y))
             if current.y > 0:
-                if matrix[current.x][current.y - 1] == 0:
-                    neighbors.append(node(current.x, current.y - 1))
+                if array[current.x][current.y - 1] == 0:
+                    neighbors.append(Node(current.x, current.y - 1))
 
             if current.x != self.boundsx - 1:
-                if matrix[current.x + 1][current.y] == 0:
-                        neighbors.append(node(current.x + 1, current.y))
+                if array[current.x + 1][current.y] == 0:
+                        neighbors.append(Node(current.x + 1, current.y))
 
             if current.y != self.boundsy - 1:    
-                if matrix[current.x][current.y + 1] == 0:
-                        neighbors.append(node(current.x, current.y + 1))
+                if array[current.x][current.y + 1] == 0:
+                        neighbors.append(Node(current.x, current.y + 1))
             for neighbor in neighbors:
                 if self.contains(closedSet, neighbor):
                     continue
@@ -618,7 +617,7 @@ class PathFind:
                 return True
         return False
 
-    def lowestValueInDict(self, openSet, dic):
+    def lowestValue(self, openSet, dic):
         lowestVal = None
         lowestKey = ""
 
@@ -630,7 +629,7 @@ class PathFind:
                 
         return lowestKey
 
-    def reconstruct_path(self, cameFrom, current):
+    def reconstructPath(self, cameFrom, current):
         total_path = [current]
         while current in cameFrom:
             current = cameFrom[current]
@@ -680,7 +679,7 @@ def getPath(startx, starty, finishx,finishy):
     listcoord = []
     c= 0
     Path = PathFind(array(),27, 27)
-    path = Path.AStar(node(startx,starty), node(finishy,finishx))
+    path = Path.AStar(Node(startx,starty), Node(finishy,finishx))
     for point in path:   
         coo = point.x, point.y
         listcoord.append(coo)
