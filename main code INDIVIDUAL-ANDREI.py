@@ -43,7 +43,7 @@ def binarySearch(selectedGameList, gameID):  #binary search that takes a list an
             else:
                 return False
             
-#############################   Global variables:
+##############################   Global variables:
             
 global sec
 sec = 1  
