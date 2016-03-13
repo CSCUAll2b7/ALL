@@ -1,0 +1,50 @@
+#QUICK SORT ALGORITHM
+
+def quickSort(data):
+   quickSortHelper(data,0,len(data)-1)
+
+def quickSortHelper(data,first_value,last_value):
+   if first_value < last_value:
+
+       split_data = partition(data,first_value,last_value)
+
+       quickSortHelper(data,first_value,split_data-1)
+       quickSortHelper(data,split_data+1,last_value)
+
+
+def partition(data,first_value,last_value):
+   pivot = data[first_value]
+
+   left_pivot = first_value+1
+   right_pivot = last_value
+
+   done = False
+   while not done:
+
+       while left_pivot <= right_pivot and data[left_pivot] <= pivot:
+           left_pivot = left_pivot + 1
+
+       while data[right_pivot] >= pivot and right_pivot >= left_pivot:
+           right_pivot = right_pivot -1
+
+       if right_pivot < left_pivot:
+           done = True
+       else:
+           temp = data[left_pivot]
+           data[left_pivot] = data[right_pivot]
+           data[right_pivot] = temp
+
+   temp = data[first_value]
+   data[first_value] = data[right_pivot]
+   data[right_pivot] = temp
+
+
+   return right_pivot
+
+data_01 = [54,26,93,17,77,31,44,55,20]
+data_02 = [54,26,93,17,77,31,44,55,20]
+quickSort(data_01)
+quickSort(data_02)
+data_02.reverse()
+print(data_01)
+print(data_02)
