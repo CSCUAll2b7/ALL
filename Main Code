@@ -89,11 +89,9 @@ class GameShop(tk.Tk):
         self.title("Game Shop")
         
         container.pack(side = "top", fill = "both", expand = True)
-        #container.grid_rowconfigure(0, weight = 1)
-        #container.grid_columnconfigure(0, weight = 1)
 
         self.frames = {} #all game frames
-        for F in (StartPage, InfoPage, SelectionPage, GamePage, ResultPage): #if new frame is created add it here
+        for F in (StartPage, InfoPage, SelectionPage, GamePage): #if new frame is created add it here
             
             frame = F(container, self)
             
@@ -167,7 +165,7 @@ class InfoPage(tk.Frame):
         button5 = tk.Button(canvas2, text = "BACK", font = ("fixedsys",18), command = lambda :combine_funcs( controller.show_frame(StartPage),sound(), resetPages()), cursor = 'hand2', borderwidth= 3,foreground= "white", bg = "dark orange", activebackground= "orange", activeforeground= "white")
         button5.place(x = 512, y = 650, height = 57, width = 292, anchor = 'n')
 
-        def resetPages():###########################    BUG HERE   ################################ pages should reset when leaving info page
+        def resetPages(): # pages should reset when leaving info page
             self.pageCount = 0
             txt = getText('text1.txt')
             canvas2.itemconfigure(changeableText, text = txt)
@@ -287,7 +285,6 @@ class SelectionPage(tk.Frame):
         self.posCount = 0
         self.entrypos = 0
         self.listCount =0
-        self.checkPass = False
         
         def setStart(pos): # sets player position acoording which button for setting start on the map was pressed, updates data in Player class
             if pos == 1:
@@ -526,7 +523,7 @@ class SelectionPage(tk.Frame):
                 confirmButton.config(state = 'normal')
 #############################################################################################################
 
-class node:
+class Node:
     """Class used to store an x and y coordanates of each  node in the map for a* algorithm"""
     def __init__(self, x, y):
         self.x = x
@@ -540,15 +537,17 @@ class node:
         return hash((self.x, self.y))
 
 class PathFind:
-    """As a constructior it takes a 2D array with 0's where the robot can go and 1's where it cant"""
-    def __init__(self,matrix, boundsx, boundsy):
+    """ class that finds a path between two points on the map (graph), must specify bounds of the map, map should be in 0 and 1's"""
+    
+    def __init__(self, array, boundsx, boundsy):
         self.boundsx = boundsx
         self.boundsy = boundsy
-        self.array = matrix
-    """Returns a list (reverse order) or the nodes to go to in orger to get to the obective, or false if its imposible. Takes 2 nodes, starting position and end position. """
+        self.array = array
+   
     def AStar(self, start, goal):
+    	# takes start and goal positions of the object and creates most optimal path between them, uses lists to store child nodes 
 
-        matrix = self.array
+        array = self.array
         closedSet = []
         
         openSet = [start]
@@ -564,61 +563,65 @@ class PathFind:
         
         while openSet != [] :
             
-            current = self.lowestValueInDict(openSet, fScore)
+            current = self.lowestValue(openSet, fScore)
             if current.x == goal.x and current.y == goal.y:
-                return self.reconstruct_path(cameFrom, goal)
+                return self.reconstructPath(cameFrom, goal)
             
             openSet.remove(current)
             closedSet.append(current)
 
-            neighbors = []
+            neighbourNodes = []
             if current.x > 0:
-                if matrix[current.x -1][current.y] == 0:
-                    neighbors.append(node(current.x -1, current.y))
+                if array[current.x -1][current.y] == 0:
+                    neighbourNodes.append(Node(current.x -1, current.y))
+                    
             if current.y > 0:
-                if matrix[current.x][current.y - 1] == 0:
-                    neighbors.append(node(current.x, current.y - 1))
+                if array[current.x][current.y - 1] == 0:
+                    neighbourNodes.append(Node(current.x, current.y - 1))
 
             if current.x != self.boundsx - 1:
-                if matrix[current.x + 1][current.y] == 0:
-                        neighbors.append(node(current.x + 1, current.y))
+                if array[current.x + 1][current.y] == 0:
+                        neighbourNodes.append(Node(current.x + 1, current.y))
 
             if current.y != self.boundsy - 1:    
-                if matrix[current.x][current.y + 1] == 0:
-                        neighbors.append(node(current.x, current.y + 1))
-            for neighbor in neighbors:
-                if self.contains(closedSet, neighbor):
+                if array[current.x][current.y + 1] == 0:
+                        neighbourNodes.append(Node(current.x, current.y + 1))
+                        
+            for neighbour in neighbourNodes:
+                if self.linearSearch(closedSet, neighbour):
                     continue
                 
-                tentative_gScore = gScore[current] + 1#1 being distance betwen nodes
+                tentative_gScore = gScore[current] + 1
 
-                if not self.contains(openSet, neighbor):
-                    openSet.append(neighbor)
-                elif tentative_gScore >= gScore[neighbor]:
+                if not self.linearSearch(openSet, neighbour):
+                    openSet.append(neighbour)
+                elif tentative_gScore >= gScore[neighbour]:
                     continue
-                #if it got here that measn it is the best posible route
-                cameFrom[neighbor] = current
-                gScore[neighbor] = tentative_gScore
-                fScore[neighbor] = gScore[neighbor] + self.heuristic_cost_estimate(neighbor, goal)
+                
+                cameFrom[neighbour] = current
+                gScore[neighbour] = tentative_gScore
+                fScore[neighbour] = gScore[neighbour] + self.heuristic_cost_estimate(neighbour, goal)
              
         return False
             
             
 
     def heuristic_cost_estimate(self, start, end):
-        #this should work but should idealy be the minimum posible path
+        
         x = abs( start.x - end.x)
         y = abs(start.y - end.y)
 
         return x + y
     
-    def contains(self, array, val):
-        for x in array:
-            if x == val:
+    def linearSearch(self, array, val):
+        pos = 0
+        while pos < len (array):
+            if array[pos] == val:
                 return True
+            pos = pos + 1
         return False
 
-    def lowestValueInDict(self, openSet, dic):
+    def lowestValue(self, openSet, dic):
         lowestVal = None
         lowestKey = ""
 
@@ -630,7 +633,7 @@ class PathFind:
                 
         return lowestKey
 
-    def reconstruct_path(self, cameFrom, current):
+    def reconstructPath(self, cameFrom, current):
         total_path = [current]
         while current in cameFrom:
             current = cameFrom[current]
@@ -676,11 +679,12 @@ def array():
     
 
 def getPath(startx, starty, finishx,finishy):
+    # returns path as a list created by A*
     print(str(startx)+' ' +str(starty)+' ' +str( finishy)+' '+str(finishx))
     listcoord = []
     c= 0
     Path = PathFind(array(),27, 27)
-    path = Path.AStar(node(startx,starty), node(finishy,finishx))
+    path = Path.AStar(Node(startx,starty), Node(finishy,finishx))
     for point in path:   
         coo = point.x, point.y
         listcoord.append(coo)
@@ -689,7 +693,7 @@ def getPath(startx, starty, finishx,finishy):
 
 ##############################################################################################################
 class GamePage(tk.Frame):
-
+    ''' class for creating objects and managing them of the actual game'''
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
 
@@ -771,6 +775,7 @@ class GamePage(tk.Frame):
             
         
         def placeGamesToCollect():
+            #creates images on canvas that will be collected
             self.gamesToBuy = selectedGameList
             self.coordList = [(133,224-32),(261,288-32),(421,96-32),(581,288-32),(709,96-32),(901,96-32),(485,192-32),(133,288-32),(325,288-32),(514,96-32),(261,160-32),(453,288-32),(613,128-32),(837,288-32),(709,288-32),(901,192-32),(805,192-32)]
             self.coordDict = {}
@@ -851,7 +856,7 @@ class GamePage(tk.Frame):
             self.player = tk.Label(canvas4, image = self.playerIcon)
 
         def shellSort(increasing,name, price):
-            print(str(len(name))+' ' +str(len(price)))
+
             if increasing == True:
                 inc = len(price) // 2
                 while inc:
@@ -999,7 +1004,6 @@ class GamePage(tk.Frame):
             localy = 500
 
             for i in localList:
-                print(i)
                 img = pictureDict[i]
                 canvas4.create_image(localx,localy, image = img)
                 localx += 120
@@ -1027,6 +1031,7 @@ class GamePage(tk.Frame):
             canvas4.create_text(505,665,text = "Time Left:       s" ,font = ("fixedsys",24),fill = 'white',justify= 'center')
 
         def walk(path):
+            #draws player on canvas
             i= 0
             while i < len(path) and sec>0 :
                 Y,X= path[i]
@@ -1071,7 +1076,7 @@ class GamePage(tk.Frame):
                         self.budget += item.price
                         continue
 
-                    #timeLeft = sec
+                    
                     sortCollectedGames(self.collectedGames, nameList, priceList, ratingList)
                     collectedStatus['text'] = 'Collected: ' + str(len(self.collectedGames)) + ' / '+ str(len(self.gamesToBuy))
                     budgetStatus['text'] = 'Budget: '+ str(self.budget)
@@ -1102,6 +1107,7 @@ class GamePage(tk.Frame):
 #############################################################################################################################################################################
 
 class Player():
+    '''keeps player image and position'''
     def __init__(self, image, startingPosition = (0,0)):
         self.image = image
         self.startPos = startingPosition
@@ -1129,7 +1135,7 @@ iGame7 = Game(7,'Witcher 3', 'Adventure',50, 4, 'game7.gif','lbl7.png',485,160)
 iGame8 = Game(8, 'Fall Out 4','Adventure', 40, 5, 'game8.png','lbl8.png', 133,256)
 iGame9 = Game(9, 'Limbo' ,'Indie',3,4,'game9.png','lbl9.png',325, 256)
 iGame10 = Game(10,'Undertale', 'Indie', 5, 4, 'game10.png','lbl10.png', 482,64)
-iGame11 = Game(11,'To The Moon','Indie', 2, 3, 'game11.png','lbl11.png',261,256)
+iGame11 = Game(11,'To The Moon','Indie', 2, 3, 'game11.png','lbl11.png',261,160)
 iGame12 = Game(12,'Little Big Planet','Puzzle', 6, 2 , 'game12.png','lbl12.png',453,256)
 iGame13 = Game(13,'Infra', 'Puzzle',11,2, 'game13.png','lbl13.png',613,96)
 iGame14 = Game(14,'Puzzle Stages','Puzzle', 1,1,'game14.png','lbl14.png',837,256)
@@ -1140,7 +1146,4 @@ iGame17 = Game(17,'Need for Speed','Sports', 5, 4, 'game17.gif','lbl17.png', 805
 
 app = GameShop()
 app.mainloop()
-
-
-
         
