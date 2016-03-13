@@ -1100,7 +1100,7 @@ class GamePage(tk.Frame):
             moneySp =self.money - moneyLeft
             avgRate = round(int(self.rating)/len(self.collectedGames),2)
             colGames = ''.join(nameList)
-            score = (gamesCo//timePassed*self.money)
+            score = (len(self.collectedGames)//(allTime - sec)*self.money)
             resultList = [gamesCo,gamesLeft,timeLeft,timePassed, moneySp, moneyLeft, avgRate, colGames, score]
             print(resultList)
 
@@ -1178,7 +1178,6 @@ class ResultPage(tk.Frame):
         tk.Frame.__init__(self, parent)
 
         self.gameBackground = openImage('resultPage.jpg')
-        self.highscore = 0
         canvas5 = tk.Canvas(self, width = 1024, height = 768, bg = "white")
         canvas5.create_image(1024/2,768/2,image = self.gameBackground)
         canvas5.pack()
@@ -1195,7 +1194,7 @@ class ResultPage(tk.Frame):
         canvas5.create_text(318, 270, fill = 'gray8', font = ("fixedsys", 24, "bold"), text = "Average game rating: " )
         
         canvas5.create_text(312, 330, fill = 'gray8', font = ("fixedsys", 32, "bold"), text = "Overall score:" )
-        canvas5.create_text(270, 560, fill = 'gray8', font = ("fixedsys", 72, "bold"), text = str(self.highscore))
+
     
         result = tk.Button(canvas5, text = "SHOW RESULTS",font = ("fixedsys",18), command = lambda: combine_funcs(result.config(text = "EXIT", command = lambda: app.destroy(), bg = 'firebrick4',activebackground= 'firebrick3' ), sound(), getRecord(),getResults(),), cursor = 'hand2', borderwidth= 3,foreground= "white", bg = "gold", activebackground= "gold", activeforeground= "white")
         result.place(x = 512, y = 694, height = 57, width = 292, anchor = 'n')
@@ -1206,7 +1205,8 @@ class ResultPage(tk.Frame):
                 conn = sqlite3.connect('ShopResults2.db')
                 cur = conn.cursor()
 
-                resultList = cur.execute('''SELECT * FROM results WHERE id = "insertID" ''' )
+                cur.execute('''SELECT * FROM results WHERE id = ? ''',(insertID,) )
+                resultList = cur.fetchone()
                 showResult(resultList)
                 
             except Exception as e:
@@ -1222,7 +1222,9 @@ class ResultPage(tk.Frame):
                 conn = sqlite3.connect('ShopResults2.db')
                 cur = conn.cursor()
                 
-                self.highscore = cur.execute('''SELECT MAX(score) FROM results ''' )
+                cur.execute('''SELECT MAX(score) FROM results ''' )
+                highscore = cur.fetchone()
+                canvas5.create_text(270, 560, fill = 'gray8', font = ("fixedsys", 72, "bold"), text = str(highscore))
                 
             except Exception as e:
                 conn.rollback()
@@ -1232,13 +1234,16 @@ class ResultPage(tk.Frame):
                 conn.close()
 
         def showResult(alist):
-            i=120
+
             
-            for item in alist:
-                if item != alist[1] or item != alist[-1] or item != alist[-2]:
-                    canvas5.create_text(900, i, fill = 'gray8', font = ("fixedsys", 24, "bold"), text = str(item), anchor= 'e' )
-                    i+=30
-                
+            canvas5.create_text(900, 120, fill = 'gray8', font = ("fixedsys", 24, "bold"), text = (str(alist[1])+ '/'+str(alist[2])) , anchor= 'e' )
+            canvas5.create_text(900, 150, fill = 'gray8', font = ("fixedsys", 24, "bold"), text = str(alist[3]), anchor= 'e' )
+            canvas5.create_text(900, 180, fill = 'gray8', font = ("fixedsys", 24, "bold"), text = str(alist[4]), anchor= 'e' )
+            canvas5.create_text(900, 210, fill = 'gray8', font = ("fixedsys", 24, "bold"), text = str(alist[5]), anchor= 'e' )
+            canvas5.create_text(900, 240, fill = 'gray8', font = ("fixedsys", 24, "bold"), text = str(alist[6]), anchor= 'e' )
+            canvas5.create_text(900, 270, fill = 'gray8', font = ("fixedsys", 24, "bold"), text = str(alist[7]), anchor= 'e' )
+
+            
             canvas5.create_text(900, 330, fill = 'gray8', font = ("fixedsys", 32, "bold"), text = str(alist[-1]), anchor= 'e' )
             
             temp = alist[-2].split()
@@ -1252,23 +1257,23 @@ class ResultPage(tk.Frame):
 ##############################################################################################################################################
 
 gamer = Player('gamer.jpg')
-iGame1 = Game(1, 'BattleField', 'Action', 23, 5,'game1.gif', 'lbl1.png', 133, 192)
-iGame2 = Game(2,'GTA 5', 'Action', 40, 5, 'game2.png','lbl2.png',261,256)
-iGame3 = Game(3,'XCOM2', 'Action', 20, 4, 'game3.png','lbl3.png', 421,64)
-iGame4 = Game(4,'Call Of Duty','Action', 10, 3,'game4.gif','lbl4.png', 581, 256)
-iGame5 = Game(5,'Sonic','Adventure', 4, 3,'game5.png','lbl5.png', 709, 64)
-iGame6 = Game(6,'DayZ', 'Adventure',20, 2, 'game6.png','lbl6.png', 901,64)
-iGame7 = Game(7,'Witcher 3', 'Adventure',50, 4, 'game7.gif','lbl7.png',485,160)
-iGame8 = Game(8, 'Fall Out 4','Adventure', 40, 5, 'game8.png','lbl8.png', 133,256)
-iGame9 = Game(9, 'Limbo' ,'Indie',3,4,'game9.png','lbl9.png',325, 256)
-iGame10 = Game(10,'Undertale', 'Indie', 5, 4, 'game10.png','lbl10.png', 482,64)
-iGame11 = Game(11,'To The Moon','Indie', 2, 3, 'game11.png','lbl11.png',261,160)
-iGame12 = Game(12,'Little Big Planet','Puzzle', 6, 2 , 'game12.png','lbl12.png',453,256)
-iGame13 = Game(13,'Infra', 'Puzzle',11,2, 'game13.png','lbl13.png',613,96)
-iGame14 = Game(14,'Puzzle Stages','Puzzle', 1,1,'game14.png','lbl14.png',837,256)
-iGame15 = Game(15,'The Crew', 'Sports',13, 3, 'game15.png','lbl15.png', 709,256)
-iGame16 = Game(16,'Fifa 15','Sports', 25, 4, 'game16.gif','lbl16.png',901, 160)
-iGame17 = Game(17,'Need for Speed','Sports', 5, 4, 'game17.gif','lbl17.png', 805,160)
+iGame1 = Game(1, 'BattleField ', 'Action', 23, 5,'game1.gif', 'lbl1.png', 133, 192)
+iGame2 = Game(2,'GTA5 ', 'Action', 40, 5, 'game2.png','lbl2.png',261,256)
+iGame3 = Game(3,'XCOM2 ', 'Action', 20, 4, 'game3.png','lbl3.png', 421,64)
+iGame4 = Game(4,'CallOfDuty ','Action', 10, 3,'game4.gif','lbl4.png', 581, 256)
+iGame5 = Game(5,'Sonic ','Adventure', 4, 3,'game5.png','lbl5.png', 709, 64)
+iGame6 = Game(6,'DayZ ', 'Adventure',20, 2, 'game6.png','lbl6.png', 901,64)
+iGame7 = Game(7,'Witcher3 ', 'Adventure',50, 4, 'game7.gif','lbl7.png',485,160)
+iGame8 = Game(8, 'FallOut4 ','Adventure', 40, 5, 'game8.png','lbl8.png', 133,256)
+iGame9 = Game(9, 'Limbo ' ,'Indie',3,4,'game9.png','lbl9.png',325, 256)
+iGame10 = Game(10,'Undertale ', 'Indie', 5, 4, 'game10.png','lbl10.png', 482,64)
+iGame11 = Game(11,'ToTheMoon ','Indie', 2, 3, 'game11.png','lbl11.png',261,160)
+iGame12 = Game(12,'LittleBigPlanet ','Puzzle', 6, 2 , 'game12.png','lbl12.png',453,256)
+iGame13 = Game(13,'Infra ', 'Puzzle',11,2, 'game13.png','lbl13.png',613,96)
+iGame14 = Game(14,'PuzzleStages ','Puzzle', 1,1,'game14.png','lbl14.png',837,256)
+iGame15 = Game(15,'TheCrew ', 'Sports',13, 3, 'game15.png','lbl15.png', 709,256)
+iGame16 = Game(16,'Fifa15','Sports', 25, 4, 'game16.gif','lbl16.png',901, 160)
+iGame17 = Game(17,'NeedforSpeed ','Sports', 5, 4, 'game17.gif','lbl17.png', 805,160)
 
 
 app = GameShop()
